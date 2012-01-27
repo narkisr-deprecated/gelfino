@@ -1,15 +1,14 @@
-; use nc -u 127.0.0.1 10001 to play with me :)
-;
 (ns gelfino.core
-   (:use aleph.udp lamina.core gloss.core gelfino.compression))
+   (:use aleph.udp 
+        lamina.core 
+        gloss.core 
+        gelfino.compression 
+        clojure.core.match))
 
 (def so (udp-socket {:port 12201 }))
 
-(def last-m (atom nil))
-
-(close @so)
-
 (defn read-last []
+  (def last-m (atom nil))
   (swap! last-m (fn [_] (->  (read-channel @so) deref :message (.array)))))
 
 (defn- norm [b] 
@@ -17,9 +16,15 @@
 
 (defn gelf-type [data] (apply str (map norm (take 2 data)))) 
 
-(decompress-zlib @last-m)
+(defn as-data [m] (->  m :message (.array)))
 
-#_(println (read-channel @so) )
-#_(wait-for-message @so)
-#_ (receive-all @so #(println "message:" (class (:message  %))) )
+(defn process-incoming [] 
+ (receive-all @so 
+   (fn [m] 
+    (let [data (as-data m)] 
+     (condp  = (gelf-type data)
+      "789c" (println  (decompress-zlib data)))))))
+
+#_(close @so)
+
 
