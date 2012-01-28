@@ -1,9 +1,7 @@
 (ns gelfino.core
    (:use aleph.udp 
-        lamina.core 
-        gloss.core 
-        gelfino.compression 
-        clojure.core.match))
+        lamina.core gelfino.compression gelfino.constants gelfino.chunked
+        ))
 
 (def so (udp-socket {:port 12201 }))
 
@@ -18,13 +16,22 @@
 
 (defn as-data [m] (->  m :message (.array)))
 
+(def output (channel))
+
+(receive-all output #(println %))
+
 (defn process-incoming [] 
  (receive-all @so 
    (fn [m] 
-    (let [data (as-data m)] 
-     (condp  = (gelf-type data)
-      "789c" (println  (decompress-zlib data)))))))
+     (let [data (as-data m)] 
+      (condp  = (gelf-type data)
+       zlib-header (enqueue output (decompress-zlib data))
+       chunked-header (handle-chunked data output)
+       )))))
 
 #_(close @so)
 
 
+
+#_(keep-indexed (fn [i v] (if (> i 2) v))  (take 12 @last-m)) 
+; Each chaunked message can be a channel that we reduce upon, once its drained the reduce result can be used
