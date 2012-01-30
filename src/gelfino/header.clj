@@ -17,8 +17,10 @@
 
 (defn positive [m k] (> (m k) 0))
 
+(defn positive-inc [m k] (or (= 0 (m k)) (positive m k)))
+
 (defn chunked-header [m]
-  {:post [(positive % :sequence) (positive % :total) 
+  {:post [(positive-inc % :sequence) (positive % :total) 
           (<= (% :sequence) (- (:total %) 1))
           #_(= (% :gelf-id chunked-header-id)) 
           ] 

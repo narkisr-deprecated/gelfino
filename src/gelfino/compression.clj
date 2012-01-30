@@ -3,15 +3,14 @@
 
 
 (defn decompress-zlib [data]
-  (let [buffer (byte-array (alength data)) 
+  (let [buffer (byte-array (alength data))
         out (ByteArrayOutputStream.)
         in (InflaterInputStream. (ByteArrayInputStream. data)) ]
-       (loop [bytes-read (.read in buffer) r 0]
-        (if-not (= bytes-read -1)
-          (do
-            (.write out buffer 0 bytes-read)
-            (recur (.read in buffer) (+ r bytes-read)))))
+       (loop [bytes-read 0]
+         (when-not (< bytes-read 0)
+           (.write out buffer 0 bytes-read)
+           (recur (.read in buffer))))
+       (.flush out)
+       (.close out)
        (String. (.toByteArray out) "UTF-8")))
-
-
 
