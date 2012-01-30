@@ -4,6 +4,8 @@
 
 (def zlib-header-id "789c")
 
+(def gzip-header-id "1f8b")
+
 (def chunked-header-id "1e0f")
 
 
