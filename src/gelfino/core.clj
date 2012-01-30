@@ -1,4 +1,5 @@
 ; seem to be the cause  for truncation! http://lists.jboss.org/pipermail/netty-users/2009-June/000729.html
+; Try using this one http://web.archiveorange.com/archive/v/ZVMdI7IKZeZ1FJfkdqUN 
 (ns gelfino.core
   (:use aleph.udp lamina.core 
     [clojure.tools.logging :only (trace info)]
