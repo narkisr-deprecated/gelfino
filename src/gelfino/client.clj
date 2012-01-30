@@ -3,13 +3,19 @@
     java.util.Date 
     (org.graylog2 GelfSender GelfMessage)))
 
+(def host "host")
 
-(def sender (GelfSender. "Uranus"))
+(def sender (GelfSender. "host"))
 
 (defn send-m [short full level]
   (let [msg (GelfMessage. short full (Date.) level)]
-    (.setHost msg "Uranus")
+    (.setHost msg "localhost")
     (.sendMessage sender msg )))
 
-(send-m "yeap" "not too long" "INFO") 
 
+
+(defn performance 
+  (apply pcalls (for [i (range 70000)] 
+    (fn [] 
+      (Thread/sleep 50) 
+      (send-m (str "yeap " i) "not too long" "INFO"))))) 
