@@ -1,7 +1,10 @@
 (ns gelfino.udp
-  (:import (java.net InetSocketAddress DatagramSocket DatagramPacket))
-  (:use gelfino.constants) 
-  )
+  (:import 
+   (java.net InetSocketAddress DatagramSocket DatagramPacket))
+  (:use 
+    gelfino.constants
+    [clojure.tools.logging :only (error info)]
+   ))
 
 (defn- bind [host port]
   (InetSocketAddress. host port))
@@ -18,10 +21,12 @@
 
 (defn listen-loop [consumer]
    (while @run-flag
-      (let [received-data (byte-array max-packet-size) 
+     (try
+       (let [received-data (byte-array max-packet-size) 
            packet (DatagramPacket. received-data (alength received-data))]
-        (.receive @server-socket packet) 
-        (consumer packet))))
+         (.receive @server-socket packet) 
+         (consumer packet))
+       (catch Exception e (error e)))))
 
 (defn feed-messages [consumer] 
   (.start  (Thread. #(listen-loop consumer))))
