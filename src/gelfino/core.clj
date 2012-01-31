@@ -7,19 +7,23 @@
     gloss.core
     (gelfino compression constants chunked header)))
 
-(defn as-data [m] (->  m :message (.array)))
+(defn as-data [m] 
+  (let [channel-buf (->  m :message ) dst (byte-array (.writerIndex channel-buf) )]
+    (.readBytes channel-buf dst) 
+    dst
+    ))
 
 (def output (channel))
 (def input (channel))
 
 (defn route-handling [data]
   (let [type (gelf-type data)]
-    (trace type) 
+    (info type) 
     (condp  = type
        zlib-header-id (enqueue output (decompress-zlib data))
        gzip-header-id (enqueue output (decompress-gzip data))
        chunked-header-id (handle-chunked data input)
-       (throw (Exception. (str "No matching handling found for " type))))))
+       (info (str "No matching handling found for " type)))))
 
 (receive-all output #(info (read-json %)))
 (receive-all input #(route-handling %))
@@ -35,9 +39,11 @@
 (defn start-processing [] 
  (connect)
  (receive-all (deref @port) 
-   (fn [m]
-       (info "got new message")
-       (info m)
-       (enqueue input (as-data m)))))
+   (fn [m] 
+      (enqueue input (as-data m)))))
 
 
+(defn reset [] 
+  (disconnect) 
+  (start-processing)
+  )

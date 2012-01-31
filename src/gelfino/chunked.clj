@@ -7,24 +7,20 @@
 (def channels (ref {}))
 
 (defn- merge-bytes [output curr]
-    (println (gelf-type curr))
     (.write output curr chunked-header-length (- (alength curr) chunked-header-length))
       output)
 
 
 (defn merge-chunks [chunks out-channel]
-  (let [stream (ByteArrayOutputStream.) result (reduce* merge-bytes stream chunks)]
-    (on-success result 
-        #(println (alength (.toByteArray %)))
-       #_(enqueue out-channel (.toByteArray %)))
-     (on-error result #(println %)) 
-    ))
+  (let [result (reduce* merge-bytes (ByteArrayOutputStream.) chunks)]
+    (on-success result #(enqueue out-channel (.toByteArray %)))
+    (on-error result #(println %))))
 
 (defn handle-chunked [m output]
   "Handling chunked messages, output is the channel onto completed messages will be written"
   {:pre [(> (alength m) chunked-header-length)] }  
+    (info (take 12 m))
     (let [{:keys [id sequence total]} (chunked-header m)]
-      (info (str id " " sequence " " total))
       (dosync
         (when-not (contains? @channels id)
            (alter channels assoc id (channel))))
