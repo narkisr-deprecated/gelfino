@@ -1,5 +1,3 @@
-; seem to be the cause  for truncation! http://lists.jboss.org/pipermail/netty-users/2009-June/000729.html
-; Try using this one http://web.archiveorange.com/archive/v/ZVMdI7IKZeZ1FJfkdqUN 
 (ns gelfino.core
   (:use 
     lamina.core 
@@ -18,6 +16,17 @@
        chunked-header-id (handle-chunked data (@in-out :input))
        (info (str "No matching handling found for " type)))))
 
+(defn- read-slice [packet]
+  (let [length (.getLength packet) slice (byte-array length)]
+    (System/arraycopy (.getData packet) 0 slice 0 length) 
+     slice
+     ))
+
+(defn- as-data [packet]
+  (let [data (.getData packet)]
+    (if (= chunked-header-id (gelf-type data))
+      (read-slice packet) 
+       data)))
 
 (defn start-processing [] 
  (receive-all (@in-out :output) #(info (read-json %)))
@@ -25,12 +34,12 @@
  (connect)
  (feed-messages
    (fn [packet] 
-       (println packet) 
-        ;;; chunk.setRaw(clientMessage.getData(), clientMessage.getLength());
-       (enqueue (@in-out :input) (.getData packet)))))
+       (enqueue (@in-out :input) (as-data packet)))))
 
 
 (defn reset []
   (doseq [c (vals @in-out)] (close c))
   (disconnect) 
   (start-processing))
+
+

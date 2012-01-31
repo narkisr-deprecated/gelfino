@@ -1,3 +1,5 @@
+; The following links explain why not to use Netty for udp, it sums up to the line that you gain little by using it in this use case
+; Cause  for truncation! http://tinyurl.com/6m5bfqn ;Try using this one http://tinyurl.com/887am2j  only solves it but still Netty in this case just insn't worth it.
 (ns gelfino.udp
   (:import 
    (java.net InetSocketAddress DatagramSocket DatagramPacket))
@@ -23,7 +25,7 @@
    (while @run-flag
      (try
        (let [received-data (byte-array max-packet-size) 
-           packet (DatagramPacket. received-data (alength received-data))]
+             packet (DatagramPacket. received-data (alength received-data))]
          (.receive @server-socket packet) 
          (consumer packet))
        (catch Exception e (error e)))))
