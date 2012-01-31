@@ -8,4 +8,4 @@
 
 (def chunked-header-id "1e0f")
 
-
+(def max-packet-size 8192)
