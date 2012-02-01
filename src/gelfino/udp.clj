@@ -23,12 +23,11 @@
 
 (defn listen-loop [consumer]
    (while @run-flag
-     (try
-       (let [received-data (byte-array max-packet-size) 
+     (let [received-data (byte-array max-packet-size) 
              packet (DatagramPacket. received-data (alength received-data))]
          (.receive @server-socket packet) 
-         (consumer packet))
-       (catch Exception e (error e)))))
+         (try (consumer packet)
+           (catch Error e (error e))))))
 
 (defn feed-messages [consumer] 
   (.start  (Thread. #(listen-loop consumer))))
