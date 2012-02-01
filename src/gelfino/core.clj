@@ -1,4 +1,5 @@
 (ns gelfino.core
+  (:gen-class)
   (:use 
     lamina.core 
     [clojure.tools.logging :only (trace info debug warn)]
@@ -9,11 +10,11 @@
 (def in-out (atom {:input (channel) :output (channel)}))
 (def counters (agent {:total 0 :prev 0}))
 
-(tron/do-periodically 5000 
+(defn statistics [] (tron/do-periodically 5000 
   (let [{:keys [total prev]} @counters]
     (info (str "Total messages processed so far: " total))
     (info (str "Current processing rate is: " (- total prev)))
-    (send counters #(assoc % :prev (% :total )))))
+    (send counters #(assoc % :prev (% :total ))))))
 
 (defn route-handling [data]
   (let [type (gelf-type data)]
@@ -55,4 +56,6 @@
   (disconnect) 
   (start-processing))
 
-
+(defn -main []
+  (statistics)
+  (start-processing))
