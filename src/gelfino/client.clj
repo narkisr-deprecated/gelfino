@@ -24,7 +24,8 @@
 
  
 (defn performance []
-  (apply pcalls (for [i (range 700)] 
+  (apply pcalls (for [i (range 20000)] 
     (fn [] 
-      (Thread/sleep 50) 
-      (send  "not too long")))))
+      ;;; (Thread/sleep 100) 
+      (send (str (.getName (Thread/currentThread)) " not too long " (.getTime (Date.))))))))
+

@@ -4,7 +4,8 @@
                  [org.clojure/tools.logging "0.2.3"]  
                  [lamina "0.4.1-alpha1"] 
                  [org.clojure/clojure "1.3.0"]
-                 [org.clojure/core.match "0.2.0-alpha9"]]
+                 [org.clojure/core.match "0.2.0-alpha9"]
+                 [tron   "0.5.2"]]
   
 :dev-dependencies [[org.codehaus.groovy/groovy "1.7.8"]
                    [org.graylog2/gelf4j "0.86"]
