@@ -29,7 +29,7 @@
        data)))
 
 (defn start-processing [] 
- (receive-all (@in-out :output) #(info (read-json %)))
+ (receive-all (@in-out :output)  #(info (read-json %)))
  (receive-all (@in-out :input) #(route-handling %))
  (connect)
  (feed-messages

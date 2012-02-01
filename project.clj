@@ -4,6 +4,10 @@
                  [org.clojure/tools.logging "0.2.3"]  
                  [lamina "0.4.1-alpha1"] 
                  [org.clojure/clojure "1.3.0"]
-                 [org.clojure/core.match "0.2.0-alpha9"]
-                 [org.graylog2/gelfj "0.9.1"] 
-                 ])
+                 [org.clojure/core.match "0.2.0-alpha9"]]
+  
+:dev-dependencies [[org.codehaus.groovy/groovy "1.7.8"]
+                   [org.graylog2/gelf4j "0.86"]
+                   [log4j/log4j "1.2.16"] 
+                   ]
+  )
