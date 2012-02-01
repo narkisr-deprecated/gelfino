@@ -28,4 +28,6 @@
       (when (= sequence (- total 1))
         (merge-chunks (@channels id) output)
         (close (@channels id)) 
+        (dosync
+          (alter channels dissoc id))
         )))
