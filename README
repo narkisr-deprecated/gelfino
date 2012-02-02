@@ -1,13 +1,13 @@
 # gelfino
 
-FIXME: write description
+A tiny core gelf server, one of the main use cases is to forward messages from graylog2 and process them 
 
 ## Usage
 
-FIXME: write
+TBD
 
 ## License
 
-Copyright (C) 2012 FIXME
+Copyright (C) 2012 narkisr.com
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Same license as graylog2
