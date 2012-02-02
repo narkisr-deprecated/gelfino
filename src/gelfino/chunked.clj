@@ -1,7 +1,7 @@
 (ns gelfino.chunked
   (:import java.io.ByteArrayOutputStream)
   (:use 
-    [clojure.tools.logging :only (trace info)]
+    [clojure.tools.logging :only (trace info error)]
     lamina.core (gelfino constants header)))
 
 (def channels (ref {}))
@@ -14,7 +14,7 @@
 (defn merge-chunks [chunks out-channel]
   (let [result (reduce* merge-bytes (ByteArrayOutputStream.) chunks)]
     (on-success result #(enqueue out-channel (.toByteArray %)))
-    (on-error result #(println %))))
+    (on-error result #(error %))))
 
 (defn handle-chunked [m output]
   "Handling chunked messages, output is the channel onto completed messages will be written"
