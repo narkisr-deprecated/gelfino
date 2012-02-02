@@ -1,5 +1,8 @@
 (ns gelfino.core
   (:gen-class)
+  (:import 
+    org.apache.log4j.Level
+    org.apache.log4j.LogManager)
   (:use 
     lamina.core 
     [clojure.tools.logging :only (trace info debug warn)]
@@ -12,8 +15,8 @@
 
 (defn statistics [] (tron/do-periodically 5000 
   (let [{:keys [total prev]} @counters]
-    (info (str "Total messages processed so far: " total))
-    (info (str "Current processing rate is: " (- total prev)))
+    (info (str "messages processed so far: " total))
+    (info (str "current rate is: " (- total prev)))
     (send counters #(assoc % :prev (% :total ))))))
 
 (defn route-handling [data]
@@ -37,7 +40,8 @@
       (read-slice packet) 
        data)))
 
-(defn start-processing [] 
+(defn start-processing [host port] 
+ (connect host (Integer. port))
  (receive-all (@in-out :output)  
     (fn [m] 
       (let [json-m (read-json m)]
@@ -46,15 +50,19 @@
  (receive-all (@in-out :input) #(route-handling %))
  (feed-messages
    (fn [packet] 
-       (debug (str "recieved packet " packet))
+       (trace (str "recieved packet " packet))
        (enqueue (@in-out :input) (as-data packet)))))
 
-(defn reset []
+(defn reset [host port]
   (doseq [c (vals @in-out)] (close c))
   (disconnect) 
-  (start-processing))
+  (start-processing host port))
 
 (defn -main [host port]
-  (connect host (Integer. port))
   (statistics)
-  (start-processing))
+  (start-processing host port))
+
+(defn- enable-tracing []
+  (.setLevel 
+    (LogManager/getLogger "log4j.logger.gelfino") (Level/toLevel "TRACE"))  
+  (debug "level set on trace"))

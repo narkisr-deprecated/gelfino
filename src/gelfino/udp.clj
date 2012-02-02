@@ -5,7 +5,7 @@
    (java.net InetSocketAddress DatagramSocket DatagramPacket))
   (:use 
     gelfino.constants
-    [clojure.tools.logging :only (error info)]
+    [clojure.tools.logging :only (error debug info)]
    ))
 
 (defn- bind [host port]
@@ -22,12 +22,15 @@
   (.close @server-socket))
 
 (defn listen-loop [consumer]
+  (debug "starting listener")
    (while @run-flag
      (let [received-data (byte-array max-packet-size) 
              packet (DatagramPacket. received-data (alength received-data))]
+         (trace "waiting for packets")
          (.receive @server-socket packet) 
          (try (consumer packet)
            (catch Error e (error e))))))
 
 (defn feed-messages [consumer] 
-  (.start  (Thread. #(listen-loop consumer))))
+  (reset! run-flag true)
+  (.start  (Thread. #(listen-loop consumer) "UDP loop")))
