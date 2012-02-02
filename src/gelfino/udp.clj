@@ -11,9 +11,9 @@
 (defn- bind [host port]
   (InetSocketAddress. host port))
 
-(defn connect []
+(defn connect [host port]
   (def server-socket (atom nil)) 
-  (reset! server-socket (DatagramSocket. (bind "Uranus" 12201 ))))
+  (reset! server-socket (DatagramSocket. (bind host port ))))
 
 (def run-flag (atom true))
 

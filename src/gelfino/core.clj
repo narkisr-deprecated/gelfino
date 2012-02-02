@@ -44,18 +44,17 @@
         (debug json-m) 
         (send counters #(assoc % :total (-> % :total (+ 1)))))))
  (receive-all (@in-out :input) #(route-handling %))
- (connect)
  (feed-messages
    (fn [packet] 
        (debug (str "recieved packet " packet))
        (enqueue (@in-out :input) (as-data packet)))))
-
 
 (defn reset []
   (doseq [c (vals @in-out)] (close c))
   (disconnect) 
   (start-processing))
 
-(defn -main []
+(defn -main [host port]
+  (connect host (Integer. port))
   (statistics)
   (start-processing))

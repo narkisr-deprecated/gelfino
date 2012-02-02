@@ -1,4 +1,4 @@
-(defproject gelfino "1.0.0-SNAPSHOT"
+(defproject gelfino "1.0.0"
   :description "An extendable Gelf server"
   :dependencies [[org.clojure/data.json "0.1.1"]  
                  [org.clojure/tools.logging "0.2.3"]  

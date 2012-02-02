@@ -10,7 +10,7 @@
 (def appender 
      (doto  (Gelf4JAppender.)
        (.setHost "Uranus")    
-       (.setGraylogServerHost "Uranus")))
+       (.setGraylogServerHost "habel")))
 
 (def transport (GelfTransport.)) 
 
