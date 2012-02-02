@@ -2,7 +2,8 @@
   (:import java.io.ByteArrayOutputStream)
   (:use 
     [clojure.tools.logging :only (trace info error)]
-    lamina.core (gelfino constants header)))
+    lamina.core 
+    (gelfino constants header)))
 
 (def channels (ref {}))
 

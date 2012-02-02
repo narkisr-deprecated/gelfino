@@ -7,17 +7,10 @@
     lamina.core 
     [clojure.tools.logging :only (trace info debug warn)]
     clojure.data.json
-    tron
-    (gelfino compression constants chunked header udp)))
+    (gelfino compression constants chunked header udp statistics)))
 
 (def in-out (atom {:input (channel) :output (channel)}))
-(def counters (agent {:total 0 :prev 0}))
 
-(defn statistics [] (tron/do-periodically 5000 
-  (let [{:keys [total prev]} @counters]
-    (info (str "messages processed so far: " total))
-    (info (str "current rate is: " (- total prev)))
-    (send counters #(assoc % :prev (% :total ))))))
 
 (defn route-handling [data]
   (let [type (gelf-type data)]
@@ -41,12 +34,13 @@
        data)))
 
 (defn start-processing [host port] 
+ (statistics)
  (connect host (Integer. port))
  (receive-all (@in-out :output)  
     (fn [m] 
       (let [json-m (read-json m)]
         (debug json-m) 
-        (send counters #(assoc % :total (-> % :total (+ 1)))))))
+        (inc-total))))
  (receive-all (@in-out :input) #(route-handling %))
  (feed-messages
    (fn [packet] 
@@ -59,7 +53,6 @@
   (start-processing host port))
 
 (defn -main [host port]
-  (statistics)
   (start-processing host port))
 
 (defn- enable-tracing []

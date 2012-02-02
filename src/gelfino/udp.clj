@@ -5,7 +5,7 @@
    (java.net InetSocketAddress DatagramSocket DatagramPacket))
   (:use 
     gelfino.constants
-    [clojure.tools.logging :only (error debug info)]
+    [clojure.tools.logging :only (trace error debug info)]
    ))
 
 (defn- bind [host port]

@@ -1,6 +1,5 @@
 (ns gelfino.header
-   (:use (gelfino constants)) 
-    )
+   (:use (gelfino constants)))
 
 (defn- bit-decode [bit] 
   (.substring (Integer/toString  (+ (bit-and 0xff bit) 0x100) 16) 1)) 
