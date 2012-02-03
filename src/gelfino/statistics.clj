@@ -3,13 +3,21 @@
    [clojure.tools.logging :only (trace info debug warn)]
    tron))
 
-(def counters (agent {:total 0 :prev 0}))
+(def counters (agent {:processed 0 :prev 0 :recieved 0}))
 
-(defn statistics [] (tron/do-periodically 5000 
-  (let [{:keys [total prev]} @counters]
-    (info (str "messages processed so far: " total))
-    (info (str "current rate is: " (- total prev)))
-    (send counters #(assoc % :prev (% :total ))))))
+(defn collect [] 
+  (tron/do-periodically 5000 
+    (let [{:keys [processed prev recieved]} @counters]
+      (info (str "messages recieved: " recieved))
+      (info (str "messages processed: " processed))
+      (info (str "current rate is: " (- processed prev)))
+      (send counters #(assoc % :prev (% :processed ))))))
 
-(defn inc-total [] 
-  (send counters #(assoc % :total (-> % :total (+ 1)))))
+(defn stop []
+  (tron/shutdown))
+
+(defn inc-processed [] 
+  (send counters #(assoc % :processed (-> % :processed (+ 1)))))
+
+(defn inc-received [] 
+  (send counters #(assoc % :recieved (-> % :recieved (+ 1)))))

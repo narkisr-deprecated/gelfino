@@ -4,7 +4,7 @@
   (:import 
    (java.net InetSocketAddress DatagramSocket DatagramPacket))
   (:use 
-    gelfino.constants
+    (gelfino constants header) 
     [clojure.tools.logging :only (trace error debug info)]
    ))
 
@@ -12,8 +12,7 @@
   (InetSocketAddress. host port))
 
 (defn connect [host port]
-  (def server-socket (atom nil)) 
-  (reset! server-socket (DatagramSocket. (bind host port ))))
+  (def server-socket (atom (DatagramSocket. (bind host port)))))
 
 (def run-flag (atom true))
 
@@ -21,14 +20,26 @@
   (reset! run-flag false)
   (.close @server-socket))
 
+(defn- read-slice [^DatagramPacket packet]
+  (let [length (.getLength packet) slice (byte-array length)]
+    (System/arraycopy (.getData packet) 0 slice 0 length) 
+     slice))
+
+(defn- as-data [^DatagramPacket packet]
+  (let [data (.getData packet)]
+    (if (= chunked-header-id (gelf-type data))
+      (read-slice packet) 
+       data)))
+
 (defn listen-loop [consumer]
   (debug "starting listener")
-   (while @run-flag
+  (while @run-flag
      (let [received-data (byte-array max-packet-size) 
-             packet (DatagramPacket. received-data (alength received-data))]
+           packet (DatagramPacket. received-data (alength received-data))
+           socket ^DatagramSocket @server-socket]
          (trace "waiting for packets")
-         (.receive @server-socket packet) 
-         (try (consumer packet)
+         (.receive socket packet) 
+         (try (consumer (as-data packet))
            (catch Error e (error e))))))
 
 (defn feed-messages [consumer] 

@@ -8,24 +8,27 @@
 (def host "Uranus")
 
 (def appender 
-     (doto  (Gelf4JAppender.)
-       (.setHost "Uranus")    
-       (.setGraylogServerHost "Uranus")))
+  (doto  (Gelf4JAppender.)
+    (.setHost "Uranus")    
+    (.setGraylogServerHost "Uranus")))
 
 (def transport (GelfTransport.)) 
-
 
 (defn send [m]
   (.sendGelfMessageToGraylog transport appender 
     (json-str
       {:facility "GELF" :full_message m :host host :level "INFO" :short_message m :version "1.0"})))
 
-#_(send (apply str (range 3000)))
-
- 
-(defn performance []
-  (apply pcalls (for [i (range 2000)] 
+#_(defn performance [total]
+  (apply pcalls (for [i (range total)] 
     (fn [] 
       (Thread/sleep 50) 
       (send (str (.getName (Thread/currentThread)) " not too long " (.getTime (Date.))))))))
 
+(defn performance [total]
+  (doseq [i (range total)] 
+    (future  (Thread/sleep 100) 
+      (if (> 1  (rand-int 2))
+        (send (str (.getName (Thread/currentThread)) (apply str (range 2000)) (.getTime (Date.))))
+        (send (str (.getName (Thread/currentThread)) " not too long " (.getTime (Date.)))) 
+        ))))
