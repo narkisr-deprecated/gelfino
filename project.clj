@@ -6,7 +6,8 @@
                  [org.clojure/clojure "1.3.0"]
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [log4j/log4j "1.2.16"]
-                 [tron "0.5.2"]]
+                 [tron "0.5.2"]
+                 [cheshire "2.1.0"]]
   
    :dev-dependencies [[org.codehaus.groovy/groovy "1.7.8"]
                       [org.graylog2/gelf4j "0.86"]]
