@@ -1,5 +1,5 @@
-(defproject gelfino "1.0.0"
-  :description "An extendable Gelf server"
+(defproject com.narkisr/gelfino "0.1.0"
+  :description "An embeddable Gelf server library"
   :dependencies [[org.clojure/data.json "0.1.1"]  
                  [org.clojure/tools.logging "0.2.3"]  
                  [lamina "0.4.1-alpha1"] 
@@ -9,10 +9,9 @@
                  [tron "0.5.2"]
                  [cheshire "2.1.0"]]
   
-   :dev-dependencies [ 
+   :dev-dependencies [[lein-clojars "0.6.0"]  
                       [org.codehaus.groovy/groovy "1.7.8"]
                       [cljs-uuid "0.0.2"]
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                       [org.graylog2/gelf4j "0.86"]]
-   :main  gelfino.core
 )
