@@ -4,14 +4,13 @@
     org.apache.log4j.LogManager)
   (:use (gelfino udp streams))
   (:require  
-    [gelfino.statistics :as stats]) 
-  )
+    [gelfino.statistics :as stats]))
 
 (defn start-processing [host port] 
-    (stats/collect) 
-    (initialize-channels)
-    (connect host (Integer. port)) 
-    (feed-messages feed-fn))
+  (stats/collect) 
+  (initialize-channels)
+  (connect host (Integer. port)) 
+  (feed-messages feed-fn))
 
 (defn- shutdown []
   (stats/stop)

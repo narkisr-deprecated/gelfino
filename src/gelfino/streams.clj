@@ -5,7 +5,9 @@
     lamina.core)
   (:require 
     [cheshire.core :as cheshire]
+    [clojure.walk :as walk]
     [gelfino.statistics :as stats])
+     
   )
 
 (def base-channels (atom {}))
@@ -37,9 +39,9 @@
   (doseq [c (vals @base-channels)] (close c)))
 
 (defn feed-fn [packet]
-   (trace (str "recieved packet " packet))
-   (stats/inc-received)
-   (enqueue (@base-channels :input) packet))
+  (trace (str "recieved packet " packet))
+  (stats/inc-received)
+  (enqueue (@base-channels :input) packet))
 
 (defn into-pred [selector]
   (cond 
@@ -53,6 +55,10 @@
         preds (map (fn [[k v]] [k (into-pred v)]) pairs)]
      (fn [m] (every? (fn [[k v]] (v (m k))) preds))))
 
+(defn apply-sym [orig form]
+  (let [new (gensym (name orig))]
+    (concat (list 'fn [new]) (list (walk/postwalk #(if (= % orig) new %) form)))))
+
 (defmacro defstream
   "A stream of messages filtered out of the entire messages recieved 
    the defenition takes pairs of key values where key is the message part we filter upon and the value is either:
@@ -63,9 +69,8 @@
   `(let [stream-input# (channel)]
      (swap! stream-channels assoc ~(keyword name) 
        (fn [jsons#] 
-         (receive-all (filter* (filter-fn '~rest) jsons#) ~(last rest))))))
+         (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
 
 ;examples
-(macroexpand '(defstream not-too-long :short-message #" not too long " (println message))) 
-(defstream not-too-long :short-message #" not too long " 
-  (fn [m] (println m)))
+#_(macroexpand '(defstream not-too-long :short-message #" not too long " (println message))) 
+

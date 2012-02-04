@@ -17,11 +17,15 @@
     (is (= (filter (filter-fn [:short-message #(= % "bar")]) messages) '({:short-message "bar"})))
     ))
 
+(deftest sym-replacement 
+  (println (apply-sym 'message '(println message))))
+
 (deftest simple-stream
-  (defstream not-too-long :short-message #"foo" (fn [m] (println m)))     
+  (def result (atom nil))
+  (defstream not-too-long :short-message #"foo" (reset! result message))     
   (is (= (keys @stream-channels) '(:not-too-long)))
   (initialize-channels)
   (lam/enqueue (@base-channels :output) "{\"short-message\" : \"foo\"}")
-  #_(lam/receive (@stream-channels :not-too-long) #(println %))
-  )
+  (lam/enqueue (@base-channels :output) "{\"short-message\" : \"bar\"}")
+  (is (= @result {:short-message "foo"})))
 
