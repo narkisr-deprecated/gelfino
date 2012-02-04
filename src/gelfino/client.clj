@@ -17,7 +17,7 @@
 (defn send [m]
   (.sendGelfMessageToGraylog transport appender 
     (json-str
-      {:facility "GELF" :full_message m :host host :level "INFO" :short_message m :version "1.0"})))
+      {:facility "GELF" :full_message m :host host :level "INFO" :short_message m :version "1.0" :_unicorn true})))
 
 #_(defn performance [total]
   (apply pcalls (for [i (range total)] 

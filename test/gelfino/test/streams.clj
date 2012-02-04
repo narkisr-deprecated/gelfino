@@ -18,11 +18,14 @@
     ))
 
 (deftest sym-replacement 
-  (println (apply-sym 'message '(println message))))
+  (let [replaced (apply-sym 'message '((foo z) (println message)))]
+    (is (not (= (second (nth replaced 2)) '(println message))))
+    (is (= (first (nth replaced 2)) '(foo z)))
+    ))
 
 (deftest simple-stream
   (def result (atom nil))
-  (defstream not-too-long :short-message #"foo" (reset! result message))     
+  (defstream not-too-long :short-message #"foo" (do (println message) (reset! result message)))     
   (is (= (keys @stream-channels) '(:not-too-long)))
   (initialize-channels)
   (lam/enqueue (@base-channels :output) "{\"short-message\" : \"foo\"}")
