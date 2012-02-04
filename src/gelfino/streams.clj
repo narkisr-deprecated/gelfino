@@ -6,9 +6,7 @@
   (:require 
     [cheshire.core :as cheshire]
     [clojure.walk :as walk]
-    [gelfino.statistics :as stats])
-     
-  )
+    [gelfino.statistics :as stats]))
 
 (def base-channels (atom {}))
 (def stream-channels (atom {}))
@@ -36,7 +34,8 @@
     (receive-all input #(route-handling %))))
 
 (defn close-channels []
-  (doseq [c (vals @base-channels)] (close c)))
+  (doseq [c (vals @base-channels)] (close c))
+  (reset! stream-channels {}))
 
 (defn feed-fn [packet]
   (trace (str "recieved packet " packet))
@@ -45,7 +44,7 @@
 
 (defn into-pred [selector]
   (cond 
-    (instance? clojure.lang.IFn selector) selector
+    (instance? clojure.lang.IFn (eval selector)) (eval selector) 
     (instance? java.util.regex.Pattern selector) (fn [v] (-> (re-matches selector v) nil? not))
     (instance? java.lang.String selector) (fn [v] (.contains v selector))
     :else (throw (Exception.(str "Bad predicate type " selector)))))
@@ -72,5 +71,5 @@
          (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
 
 ;examples
-#_(macroexpand '(defstream not-too-long :short-message #" not too long " (println message))) 
+#_(macroexpand '(defstream not-too-long :short_message #" not too long " (println message))) 
 

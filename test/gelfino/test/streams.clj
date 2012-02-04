@@ -30,5 +30,15 @@
   (initialize-channels)
   (lam/enqueue (@base-channels :output) "{\"short-message\" : \"foo\"}")
   (lam/enqueue (@base-channels :output) "{\"short-message\" : \"bar\"}")
-  (is (= @result {:short-message "foo"})))
+  (is (= @result {:short-message "foo"}))
+  (close-channels) 
+  )
 
+(deftest level-predicate 
+  (def result (atom nil))
+  (defstream info :level #(= "INFO" %) (reset! result message))     
+  (is (= (keys @stream-channels) '(:info)))
+  (initialize-channels)
+  (lam/enqueue (@base-channels :output) "{\"short-message\" : \"foo\" , \"level\":\"INFO\"}")
+  (lam/enqueue (@base-channels :output) "{\"short-message\" : \"bar\" , \"level\":\"DEBUG\"}")
+  (is (= @result {:short-message "foo" :level "INFO"})))
