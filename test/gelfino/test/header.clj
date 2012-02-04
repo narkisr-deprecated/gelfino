@@ -1,6 +1,5 @@
 (ns gelfino.test.header
-   (:use clojure.test gelfino.header) 
-    )
+   (:use clojure.test gelfino.header))
 
 (deftest chunked-header-assertions
     (is (thrown? java.lang.AssertionError (chunked-header '())))     
