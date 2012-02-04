@@ -27,8 +27,8 @@
 
 (defn performance [total]
   (doseq [i (range total)] 
-    (future  (Thread/sleep 100) 
+    (future  (Thread/sleep 500) 
       (if (> 1  (rand-int 2))
         (send (str (.getName (Thread/currentThread)) (apply str (range 2000)) (.getTime (Date.))))
-        (send (str (.getName (Thread/currentThread)) " not too long " (.getTime (Date.)))) 
+        (send (str (.getName (Thread/currentThread)) " unicorn seen! " (.getTime (Date.)))) 
         ))))

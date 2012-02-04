@@ -9,7 +9,10 @@
                  [tron "0.5.2"]
                  [cheshire "2.1.0"]]
   
-   :dev-dependencies [[org.codehaus.groovy/groovy "1.7.8"]
+   :dev-dependencies [ 
+                      [org.codehaus.groovy/groovy "1.7.8"]
+                      [cljs-uuid "0.0.2"]
+                      [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                       [org.graylog2/gelf4j "0.86"]]
    :main  gelfino.core
 )

@@ -1,6 +1,7 @@
 (ns gelfino.core
   (:gen-class)
-  (:use gelfino.bootstrap))
+  (:use 
+   (gelfino bootstrap streams)))
 
 (set! *warn-on-reflection* true)
 
