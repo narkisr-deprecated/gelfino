@@ -1,5 +1,45 @@
 (ns gelfino.streams
-  (:require [gelfino.core :as gelfino-c]))
+  (:use 
+   [clojure.tools.logging :only (trace info debug error)]
+   (gelfino compression constants chunked header)
+    lamina.core)
+  (:require 
+    [cheshire.core :as cheshire]
+    [gelfino.statistics :as stats])
+  )
+
+(def base-channels (atom {}))
+(def stream-channels (atom {}))
+
+(defn route-handling [data]
+  (let [type (gelf-type data) {:keys [input output]} @base-channels]
+    (trace type) 
+      (condp  = type
+        zlib-header-id (future (enqueue output (decompress-zlib data))) 
+        gzip-header-id (future (enqueue output (decompress-gzip data))) 
+        chunked-header-id (handle-chunked data input) 
+        (error (str "No matching handling found for " type)))))
+
+(defn- into-json [s]
+  (let [json-m (cheshire/parse-string s true)]
+    (debug json-m) 
+    (stats/inc-processed)
+     json-m))
+
+(defn initialize-channels []
+  (reset! base-channels {:input (channel) :output (channel)})
+  (swap! base-channels assoc :jsons (map* into-json (@base-channels :output)))
+  (let [{:keys [input output jsons]} @base-channels] 
+    (doseq [f (vals @stream-channels)] (f jsons))
+    (receive-all input #(route-handling %))))
+
+(defn close-channels []
+  (doseq [c (vals @base-channels)] (close c)))
+
+(defn feed-fn [packet]
+   (trace (str "recieved packet " packet))
+   (stats/inc-received)
+   (enqueue (@base-channels :input) packet))
 
 (defn into-pred [selector]
   (cond 
@@ -11,8 +51,7 @@
 (defn filter-fn [pred-pairs]
   (let [pairs  (map #(into [] % ) (partition 2 pred-pairs))
         preds (map (fn [[k v]] [k (into-pred v)]) pairs)]
-     (fn [m]
-      (every? (fn [[k v]] (v (m k))) preds))))
+     (fn [m] (every? (fn [[k v]] (v (m k))) preds))))
 
 (defmacro defstream
   "A stream of messages filtered out of the entire messages recieved 
@@ -21,9 +60,12 @@
     * A regex on which the parts will be matched.
     * A substring of the matched message part." 
   [name & rest]
-      
-  )
+  `(let [stream-input# (channel)]
+     (swap! stream-channels assoc ~(keyword name) 
+       (fn [jsons#] 
+         (receive-all (filter* (filter-fn '~rest) jsons#) ~(last rest))))))
 
 ;examples
+(macroexpand '(defstream not-too-long :short-message #" not too long " (println message))) 
 (defstream not-too-long :short-message #" not too long " 
-     (println message))
+  (fn [m] (println m)))
