@@ -28,6 +28,14 @@ Selectors can be one of the following:
 * A string, if the field contains the given string then it gets passed through.
 * A predicate function that accepts a single value and returns true or false.
 
+### Statistics:
+
+Gelfino logs a couple of statistics into statistics.log file, these are updated every 5sec and include:
+
+* Total messages recieved.
+* Total messages processed.
+* Processing rate (the difference between every 5sec).
+
 ## Example:
 This example showcases the forwarding of two types of events to fnordmetric, any message that matches the regex creates a matching event in the fnordmetric redis set, a second event is created for any message with the INFO level set.
 
