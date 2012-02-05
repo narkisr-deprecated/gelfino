@@ -4,7 +4,7 @@ Gelfino is a tiny embeddable [Gelf](https://github.com/Graylog2/graylog2-docs/wi
 
 Streams are filtered out of the main messages river and custom actions can be defined on any of them.
 
-One main use case of Gelfino is as forwarding destination from [graylog2-server](https://github.com/Graylog2/graylog2-server), as an example we can stream forwarded events into [fnordmetrics](https://github.com/paulasmuth/fnordmetric).
+One main use case of Gelfino is as forwarding destination from [graylog2-server](https://github.com/Graylog2/graylog2-server), as an example we can stream forwarded events into [fnordmetric](https://github.com/paulasmuth/fnordmetric).
 
 ## Usage
 Gelfino is meant  to be used as library within a Clojure project, we use a DSL to define our streams and actions.
@@ -29,7 +29,8 @@ Selectors can be one of the following:
 * A predicate function that accepts a single value and returns true or false.
 
 ## Example:
-In this example we filter two event streams
+This example showcases the forwarding of two types of events to fnordmetric, any message that matches the .*seen-unicorn.* regex creates a matching event in the fnordmetric redis set, a second event is created for any message with the INFO level set.
+
 ```clojure
 (ns gelfino.example
   (:require
