@@ -31,6 +31,7 @@ Selectors can be one of the following:
 ## Example:
 This example showcases the forwarding of two types of events to fnordmetric, any message that matches the regex creates a matching event in the fnordmetric redis set, a second event is created for any message with the INFO level set.
 
+### Code
 ```clojure
 (ns gelfino.example
   (:require
@@ -52,6 +53,23 @@ This example showcases the forwarding of two types of events to fnordmetric, any
   (defstream level :level (fn [v] (= "INFO" v)) (fnordic-even "info"))
   (start-processing host port))
 ```
+
+### Running
+
+Server side:
+```bash
+$ git clone git@github.com:narkisr/gelfino.git 
+$ cd example
+$ lein deps
+$ lein repl
+user=> (use 'gelfino-example.core)
+user=> (-main "0.0.0.0" "12201")
+```
+Client side (run from the project root):
+$ lein deps
+$ lein repl
+user=> (use 'gelfino.client)
+user=> (performance 20000); sending 20K messages localy
 
 ## Installation
 Just add [com.narkisr/gelfino "0.1.0"] to [project.clj](https://github.com/technomancy/leiningen) file.
