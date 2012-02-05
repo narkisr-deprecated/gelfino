@@ -10,9 +10,9 @@ One main use case of Gelfino is as forwarding destination from [graylog2-server]
 Gelfino can be used a library within a Clojure project, we use a DSL to define our streams and actions using the following form:
 
 ```clojure
-  (defstream <stream-name> <message-key> <selector> <action>)
-   
+  (defstream <stream-name> < <message-key> <selector> > ... <action>) 
 ```
+
 
 ### Example
 ```clojure
