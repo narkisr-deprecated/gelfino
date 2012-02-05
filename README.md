@@ -7,9 +7,9 @@ Streams are filtered out of the main messages river and custom actions can be de
 One main use case of Gelfino is as forwarding destination from [graylog2-server](https://github.com/Graylog2/graylog2-server), as an example we can stream forwarded events into [fnordmetrics](https://github.com/paulasmuth/fnordmetric).
 
 ## Usage
-Gelfino can be used a library within a Clojure project, we use a DSL to define our streams and actions 
+Gelfino is meant  to be used as library within a Clojure project, we use a DSL to define our streams and actions.
 
-### DSL
+### DSL:
 ```clojure
   (defstream <stream-name> <<message-key> <selector>> ... <action>) 
 ```
@@ -17,10 +17,18 @@ Gelfino can be used a library within a Clojure project, we use a DSL to define o
 * stream-name: a logical name for the stream.
 * message-key and selector pairs (can repeate multiple times):
   * message-key: the key within the message we filter upon.
-  * selector: the predicate we filter the key upon. 
+  * selector: the predicate we filter the key upon.
 * action: the action that will performed on selected messages.
 
-### Example
+### Selectors:
+
+Selectors can be one of the following:
+
+* A Clojure [regex form](http://clojure.org/other_functions#Other%20Useful%20Functions%20and%20Macros-Regex%20Support)   on which the field will be matched, in case of a match the messages is passed through the filter.
+* A string, if the field contains the given string then it gets passed through.
+* A predicate function that accepts a single value and returns true or false.
+
+## Example:
 In this example we filter two event streams
 ```clojure
 (ns gelfino.example
@@ -44,12 +52,13 @@ In this example we filter two event streams
   (start-processing host port))
 ```
 
-### Installation
-Add [com.narkisr/gelfino "0.1.0"] to [project.clj](https://github.com/technomancy/leiningen) file.
+## Installation
+Just add [com.narkisr/gelfino "0.1.0"] to [project.clj](https://github.com/technomancy/leiningen) file.
 
 ## License
 
+License GPLv3
+
 Copyright (C) 2012 narkisr.com
 
-License GPLv3
 
