@@ -29,9 +29,9 @@ Selectors can be one of the following:
 * A predicate function that accepts a single value and returns true or false.
 
 ## Example:
-This example showcases the forwarding of two types of events to fnordmetric, any message that matches the .*seen-unicorn.* regex creates a matching event in the fnordmetric redis set, a second event is created for any message with the INFO level set.
+This example showcases the forwarding of two types of events to fnordmetric, any message that matches the regex creates a matching event in the fnordmetric redis set, a second event is created for any message with the INFO level set.
 
-``clojure
+```clojure
 (ns gelfino.example
   (:require
    [cljs-uuid.core :as uuid]
