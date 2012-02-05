@@ -65,8 +65,11 @@ $ lein repl
 user=> (use 'gelfino-example.core)
 user=> (-main "0.0.0.0" "12201")
 ```
+
 Client side (run from the project root):
-```bash $ lein deps
+
+```bash
+$ lein deps
 $ lein repl
 user=> (use 'gelfino.client)
 user=> (performance 20000); sending 20K messages localy
