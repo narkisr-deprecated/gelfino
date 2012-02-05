@@ -65,6 +65,7 @@ This example showcases the forwarding of two types of events to fnordmetric, any
 ### Running
 
 Server side:
+
 ```bash
 $ git clone git@github.com:narkisr/gelfino.git 
 $ cd example
