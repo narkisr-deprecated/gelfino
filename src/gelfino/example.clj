@@ -6,7 +6,6 @@
    [redis.core :as redis])
   (:use (gelfino bootstrap streams)))
 
-#_(set! *warn-on-reflection* true)
 
 (defn fnordic-even [type]
   (let [uuid  (uuid/make-v4)]

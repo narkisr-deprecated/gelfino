@@ -21,8 +21,7 @@
 (defn chunked-header [m]
   {:post [(positive-inc % :sequence) (positive % :total) 
           (<= (% :sequence) (- (:total %) 1))
-          #_(= (% :gelf-id chunked-header-id)) 
-          ] 
+          (= (% :gelf-id chunked-header-id))] 
    :pre  [(> (count m) 0)]}
   "The header according to this spec:
     Chunked GELF ID: 0x1e 0x0f 

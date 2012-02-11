@@ -13,7 +13,7 @@
 
 (defn merge-chunks [chunks out-channel]
   (let [result (reduce* merge-bytes (ByteArrayOutputStream.) chunks)]
-    (on-success result (fn [^ByteArrayOutputStream output] enqueue out-channel (.toByteArray output)))
+    (on-success result (fn [^ByteArrayOutputStream output] (enqueue out-channel (.toByteArray output)))) 
     (on-error result #(error %))))
 
 (defn handle-chunked [^bytes m output]
@@ -26,5 +26,8 @@
       (enqueue (@channels id) m)
       (when (= sequence (- total 1))
         (merge-chunks (@channels id) output)
-        (future (close (@channels id))) 
-        (dosync (alter channels dissoc id)))))
+        (future
+          (close (@channels id))
+          ; if dosync is out of future scope we have a race condition!
+          (dosync 
+            (alter channels dissoc id))))))
