@@ -1,7 +1,8 @@
 (ns gelfino.chunked
   (:import java.io.ByteArrayOutputStream)
+  (:require [gelfino.statistics :as stats])
   (:use 
-    [clojure.tools.logging :only (trace info error)]
+    [clojure.tools.logging :only (trace info error debug)]
     lamina.core 
     (gelfino constants header)))
 
@@ -16,18 +17,28 @@
     (on-success result (fn [^ByteArrayOutputStream output] (enqueue out-channel (.toByteArray output)))) 
     (on-error result #(error %))))
 
+(defn add-channel [out-channel id]
+ (let [ch (channel)]
+   (alter channels assoc id 
+     {:channel ch 
+      :result (run-pipeline ch
+                #(reduce* merge-bytes (ByteArrayOutputStream.) %)
+                #(enqueue out-channel (.toByteArray %)))})))
+
 (defn handle-chunked [^bytes m output]
   "Handling chunked messages, output is the channel onto completed messages will be written"
   {:pre [(> (alength m) chunked-header-length)] }  
     (let [{:keys [id sequence total]} (chunked-header m)]
+      (debug id)
       (dosync
         (when-not (contains? @channels id)
-          (alter channels assoc id (channel))))
-      (enqueue (@channels id) m)
+          (add-channel output id)))
+      (enqueue (get-in @channels [id :channel]) m)
+      (stats/inc-chunks)
       (when (= sequence (- total 1))
-        (merge-chunks (@channels id) output)
         (future
-          (close (@channels id))
+          (close (get-in @channels [id :channel]))
+          (deref (get-in @channels [id :result])) 
           ; if dosync is out of future scope we have a race condition!
           (dosync 
             (alter channels dissoc id))))))
