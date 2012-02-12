@@ -14,26 +14,27 @@
 
 (def transport (GelfTransport.)) 
 
-(defn send [m]
+(defn gelf-send [m]
   (.sendGelfMessageToGraylog transport appender 
     (json-str
-      {:facility "GELF" :full_message m :host host :level "INFO" :short_message m :version "1.0" :_unicorn true})))
+      {:facility "GELF" :full_message m :host host :level "INFO" :short_message m :version "1.0" :_unicorn "true"})))
 
-#_(defn performance [total]
-  (apply pcalls (for [i (range total)] 
-    (fn [] 
-      (Thread/sleep 50) 
-      (send (str (.getName (Thread/currentThread)) " not too long " (.getTime (Date.))))))))
+(defn random-string [length]
+  (let [ascii-codes (concat (range 48 58) (range 66 91) (range 97 123))]
+    (apply str (repeatedly length #(char (rand-nth ascii-codes))))))
+
+(def chunked-contents (doall  (random-string 12000)))
 
 (defn performance [total]
-  (doseq [i (range total)] 
-    (future  (Thread/sleep 1000) 
-      (if (> 1  (rand-int 2))
-        (send (str (.getName (Thread/currentThread)) (apply str (range 2000)) (.getTime (Date.))))
-        (send (str (.getName (Thread/currentThread)) " unicorn seen! " (.getTime (Date.)))) 
-        ))))
+  (doseq [i (range total)]  
+    (future 
+       (if (> (rand-int 2) 0)
+          (gelf-send chunked-contents)
+          (gelf-send "short message")))))
 
 (defn periodicly [p]
  (while true
-   (Thread/sleep (* 10 60000))
-   (performance 10000)))
+   (performance 10000)  
+   (Thread/sleep (* p 60000))))
+
+#_(clojure.repl/set-break-handler!)
