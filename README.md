@@ -85,7 +85,7 @@ user=> (performance 20000); sending 20K messages localy
 ```
 
 ## Installation
-Just add [com.narkisr/gelfino "0.1.0"] to [project.clj](https://github.com/technomancy/leiningen) file.
+Just add [com.narkisr/gelfino "0.2.0"] to [project.clj](https://github.com/technomancy/leiningen) file.
 
 ## License
 
