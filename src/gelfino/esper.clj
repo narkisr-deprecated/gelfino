@@ -24,6 +24,9 @@
 (defn add-query [query listener ]
   (.addListener (.createEPL (@esper-env :admin) query) (UnicornHandler. listener)))
  
+
 (initialize-esper)
-(add-event "UnicornSeen"{:time Date :name "string"})
-(.sendEvent runtime (stringify-keys {:time (Date.) :name "Im a cute uni!"}) "UnicornSeen");
+
+(add-event "UnicornSeen" {:time Date :name "string"})
+
+(.sendEvent (@esper-env :runtime) (stringify-keys {:time (Date.) :name "Im a cute uni!"}) "UnicornSeen");

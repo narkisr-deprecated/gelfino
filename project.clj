@@ -7,7 +7,9 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [log4j/log4j "1.2.16"]
                  [tron "0.5.2"]
-                 [cheshire "2.1.0"]]
+                 [cheshire "2.1.0"]
+                 [com.espertech/esper "4.5.0"] 
+                 ]
   
    :dev-dependencies [[lein-clojars "0.6.0"]  
                       [org.codehaus.groovy/groovy "1.7.8"]
