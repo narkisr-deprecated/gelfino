@@ -9,4 +9,6 @@
       (thrown? java.lang.AssertionError (chunked-header (concat (range 10) '(3 -1)))))
     (is ; sequence < 0 
       (thrown? java.lang.AssertionError (chunked-header (concat (range 10) '(-1 1)))))
+    (is ; total > 128
+      (thrown? java.lang.AssertionError (chunked-header (concat (range 10) '(1 128)))))
    )
