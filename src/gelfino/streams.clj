@@ -17,7 +17,7 @@
       (condp  = type
         zlib-header-id (future (enqueue output (decompress-zlib data))) 
         gzip-header-id (future (enqueue output (decompress-gzip data))) 
-        chunked-header-id (handle-chunked data input) 
+        chunked-header-id (future (handle-chunked data input))
         (error (str "No matching handling found for " type)))))
 
 (defn- into-json [s]

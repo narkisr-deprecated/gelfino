@@ -25,3 +25,4 @@
   (.setLevel 
     (LogManager/getLogger "log4j.logger.gelfino.bootstrap") (Level/toLevel "TRACE"))  
   (debug "level set to trace"))
+
