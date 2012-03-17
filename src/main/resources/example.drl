@@ -1,0 +1,12 @@
+import gelfino.drools.Message
+
+declare Message
+@role(event)
+end
+
+rule "RULE 1"
+when
+    message:Message (level=="INFO") from entry-point entryone 
+then
+    System.out.println("RULE 1");
+end

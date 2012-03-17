@@ -7,11 +7,21 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [log4j/log4j "1.2.16"]
                  [tron "0.5.2"]
-                 [cheshire "2.1.0"]]
+                 [cheshire "2.1.0"]
+                 [org.drools/drools-core "5.4.0.Beta2"]
+                 [org.drools/drools-compiler "5.4.0.Beta2"]
+                 [org.drools/knowledge-api "5.4.0.Beta2"]
+                 ;[org.drools/drools-templates "5.4.0.Beta2"]
+                 ;[ com.thoughtworks.xstream/xstream "1.4.2"]
+                 [ com.sun.xml.bind/jaxb-xjc "2.2-EA"]]
   
    :dev-dependencies [[lein-clojars "0.6.0"]  
                       [org.codehaus.groovy/groovy "1.7.8"]
                       [cljs-uuid "0.0.2"]
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                       [org.graylog2/gelf4j "0.9.6"]]
+
+    :aot [gelfino.drools]
+   :resource-paths ["src/main/resources"]
+   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
 )
