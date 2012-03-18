@@ -14,7 +14,7 @@
       (redis/lpush "fnordmetric-queue" uuid))))
 
 (defn -main [host port]
-  (defstream not-too-long :short_message #".*unicorn.*" (fnordic-even "seen-unicorn"))
+  (defstream not-too-long :short_message #".*unicorn.*" (fnordic-even "unicorn_seen"))
   (defstream level :level (fn [v] (= "INFO" v)) (fnordic-even "info"))
   (start-processing host port))
 
