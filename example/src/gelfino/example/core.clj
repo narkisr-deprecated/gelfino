@@ -1,9 +1,11 @@
-(ns gelfino-example.core
+(ns gelfino.example.core
   (:require 
     [cljs-uuid.core :as uuid]  
     [cheshire.core :as cheshire]
     [redis.core :as redis])
-  (:use (gelfino bootstrap streams)))
+  (:use (gelfino bootstrap streams))
+  (:gen-class) 
+  )
 
 
 (defn fnordic-even [type]
