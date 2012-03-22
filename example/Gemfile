@@ -2,4 +2,4 @@
 source "http://rubygems.org"
 
 gem "fnordmetric"
-# gem "rails"
+gem "foreman"

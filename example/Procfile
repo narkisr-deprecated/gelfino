@@ -1,0 +1,5 @@
+fnord: ruby metrics.rb run
+gelfino: java -jar gelfino-example-1.0-standalone.jar 0.0.0.0 12201
+
+
+
