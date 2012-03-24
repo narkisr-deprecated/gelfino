@@ -1,12 +1,18 @@
-import gelfino.drools.Message
+import gelfino.drools.bridging.Message
+import java.util.Map
+import clojure.lang.IFn
+import clojure.lang.IDeref
+
+global clojure.lang.IDeref actions
+
 
 declare Message
-@role(event)
+  @role(event)
 end
 
-rule "RULE 1"
+rule "rule1" dialect "mvel"
 when
     message:Message (level=="INFO") from entry-point entryone 
 then
-    System.out.println("RULE 1");
+    actions.deref().get("rule1").invoke()
 end

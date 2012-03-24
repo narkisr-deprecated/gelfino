@@ -7,7 +7,7 @@
   (rule info-messages
         (when message :of-type Message 
           (== level "INFO" ) :from (entry-point "event-stream"))
-        (then System.out.println "Rule 1")))
+        (then (println "Rule 1")))
 
 (deftest import-single
   (let [imps (-> infos (.getDescr) (.getImports)) m-imp (bean (first imps ))]

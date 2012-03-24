@@ -1,8 +1,8 @@
 (ns gelfino.drools.dsl
-  (:use (clojure (string :only [split])))
+  (:use (clojure (string :only [split]))
+        gelfino.drools.dsl.bridging 
+        )
   (:import [org.drools.lang.api DescrFactory]))
-
-(defrecord Message [level datetime])
 
 (defmacro d-> [target & elements]
   "Threading macro with default end call"

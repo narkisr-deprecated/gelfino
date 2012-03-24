@@ -22,7 +22,7 @@
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                       [org.graylog2/gelf4j "0.9.6"]]
 
-    :aot [gelfino.drools]
+    :aot [gelfino.drools.bridging]
    :resource-paths ["src/main/resources"]
    :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
 )
