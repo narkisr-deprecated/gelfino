@@ -6,7 +6,6 @@
       org.drools.builder.ResourceType org.drools.io.ResourceFactory 
       org.drools.runtime.StatefulKnowledgeSession))
 
-(defrecord Message [level datetime])
 
 (def builder (KnowledgeBuilderFactory/newKnowledgeBuilder))
 
@@ -24,7 +23,7 @@
     (.newStatefulKnowledgeSession knowledge-base ))
 
 
-(let [session (build-session) entry (.getWorkingMemoryEntryPoint session "entryone")]
+#_(let [session (build-session) entry (.getWorkingMemoryEntryPoint session "entryone")]
   (.insert entry (Message. "INFO" ""))
   (.insert entry (Message. "bla" ""))
  (.fireAllRules session)  

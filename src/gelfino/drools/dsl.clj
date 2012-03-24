@@ -3,6 +3,7 @@
         (clojure (string :only [split])))
   (:import [org.drools.lang.api DescrFactory]))
 
+(defrecord Message [level datetime])
 
 (defmacro d-> [target & elements]
   "Threading macro with default end call"
@@ -23,8 +24,6 @@
 (defn to-infix [[pred l r]]
    (str l pred  r))
 
-#_(when message :of-type Message 
-  (= level "INFO" ) :from (entry-point "event-stream"))
 
 (defn lhs [[_ ident _ type- c _ stream]]
    `(d->
@@ -34,32 +33,14 @@
 (defn rules [dcl n l-exp r-exp ]
   `(d-> ~dcl (.newRule) (.name ~n) ~(lhs l-exp)))
 
-(defmacro def-rulestream [[_ & imps] [_ t _ role] [_ n when- then]]
+(defmacro def-rulestream [sname [_ & imps] [_ t _ role] [_ n when- then]]
   (let [package (gensym "package") with-imports (gensym "with-imports") 
         with-dec (gensym "with-dec") with-rules (gensym "with-rules")]; see http://bit.ly/GGlTuh 
-    `(let [~package (.name (DescrFactory/newPackage) "gelfino.streams") 
+    `(def ~sname
+       (let [~package (.name (DescrFactory/newPackage) "gelfino.streams") 
            ~with-imports ~@(imports package imps)
            ~with-dec ~(declare- with-imports (str t) (str role))
-           ~with-rules ~(rules with-dec (str n) when- then)
-           ] 
-       (identity ~with-rules))))
-
-#_(pprint (macroexpand-1
-            '(def-rulestream 
-               (import- gelfino.drools.Message)
-               (declare Message :role event) 
-               (rule info-messages
-                     (when message :of-type Message 
-                       (= level "INFO" ) :from (entry-point "event-stream"))
-                     (then System.out.println "Rule 1")))))
+           ~with-rules ~(rules with-dec (str n) when- then)] 
+       (identity ~with-rules)))))
 
 
-(println 
-  ( -> (def-rulestream 
-         (import- gelfino.drools.Message)
-         (declare Message :role event) 
-         (rule info-messages
-           (when message :of-type Message 
-               (= level "INFO" ) :from (entry-point "event-stream"))
-           (then System.out.println "Rule 1")))
-  (.getDescr) (.getImports)))
