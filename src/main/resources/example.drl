@@ -1,6 +1,4 @@
 import gelfino.drools.bridging.Message
-import java.util.Map
-import clojure.lang.IFn
 import clojure.lang.IDeref
 
 global clojure.lang.IDeref actions

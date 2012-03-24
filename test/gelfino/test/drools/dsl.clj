@@ -1,5 +1,5 @@
 (ns gelfino.test.drools.dsl
-  (:use clojure.pprint clojure.test gelfino.drools.dsl clojure.java.data))
+  (:use clojure.pprint clojure.test gelfino.drools.dsl gelfino.drools.bridging clojure.java.data))
 
 (def-rulestream infos
   (import- gelfino.drools.dsl.Message)
@@ -7,7 +7,7 @@
   (rule info-messages
         (when message :of-type Message 
           (== level "INFO" ) :from (entry-point "event-stream"))
-        (then (println "Rule 1")))
+        (then (println "Rule 1"))))
 
 (deftest import-single
   (let [imps (-> infos (.getDescr) (.getImports)) m-imp (bean (first imps ))]
@@ -22,14 +22,21 @@
     (is (= "role" name))
     (is (= "event" value))))
 
-;(pprint (from-java (first (-> infos (.getDescr) (.getRules)))))
+#_(pprint (from-java (first (-> infos (.getDescr) (.getRules)))))
+
+(def rules-map (from-java (first (-> infos (.getDescr) (.getRules)))))
 
 (deftest simple-lhs
-  (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} (from-java (first (-> infos (.getDescr) (.getRules))))
-        {[{exp :expression}]:descrs} constraint ]
+  (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} rules-map
+        {[{exp :expression}]:descrs} constraint]
     (is (= "level==INFO" exp))
     (is (= "event-stream" entry))
     ))
+
+(deftest static-rhs 
+  (let [{consequence :consequence } rules-map {action "info-messages"} @actions]
+    (is (= "actions.deref().get(\"info-messages1\").invoke()" consequence))
+    (is (not (nil? action )))))
 
 #_(pprint (macroexpand-1
             '(def-rulestream infos
@@ -38,6 +45,6 @@
                (rule info-messages
                      (when message :of-type Message 
                        (== level "INFO" ) :from (entry-point "event-stream"))
-                     (then System.out.println "Rule 1")))))
+                     (then (println "Rule 1"))))))
 
 

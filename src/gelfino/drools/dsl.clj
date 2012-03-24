@@ -1,7 +1,5 @@
 (ns gelfino.drools.dsl
-  (:use (clojure (string :only [split]))
-        gelfino.drools.dsl.bridging 
-        )
+  (:use (clojure (string :only [split])) gelfino.drools.bridging)
   (:import [org.drools.lang.api DescrFactory]))
 
 (defmacro d-> [target & elements]
@@ -24,17 +22,25 @@
   "turns clojure prefix notation to infix not recursive"
    (str l pred r))
 
+
+(defn rhs [n [_then_ & body]]
+  `(-> (.rhs  ~(str "actions.deref().get(\"" n "1\").invoke()"))))
+
 (defn lhs [[_ ident _type_ type- c _from_ [_entry_ stream]]]
   "lhs is drl when statement"
    `(d-> (.lhs) 
       (d-> (.pattern ~(str type-)) 
            (.id ~(str ident) true) 
            (.constraint ~(-> c to-infix str))
-           (.from) (.entryPoint ~stream)
-           )))
+           (.from) (.entryPoint ~stream))))
 
-(defn rules [dcl n l-exp r-exp ]
-  `(d-> ~dcl (.newRule) (.name ~n) ~(lhs l-exp)))
+(defn register-action [n [_then_ & body]]
+  `(dosync (alter actions assoc ~(str n) #(do ~@body))))
+
+(defn rules [dcl n l-exp r-exp]
+  `(do 
+     ~(register-action n r-exp)
+     (d-> ~dcl (.newRule) (.name ~n) ~(lhs l-exp) ~(rhs n r-exp))))
 
 (defmacro def-rulestream [sname [_ & imps] [_ t _ role] [_ n when- then]]
   (let [package (gensym "package") with-imports (gensym "with-imports") 
