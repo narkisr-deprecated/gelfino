@@ -24,12 +24,14 @@
   "turns clojure prefix notation to infix not recursive"
    (str l pred r))
 
-(defn lhs [[_ ident _ type- c _ stream]]
+(defn lhs [[_ ident _type_ type- c _from_ [_entry_ stream]]]
   "lhs is drl when statement"
    `(d-> (.lhs) 
       (d-> (.pattern ~(str type-)) 
            (.id ~(str ident) true) 
-           (.constraint ~(-> c to-infix str)))))
+           (.constraint ~(-> c to-infix str))
+           (.from) (.entryPoint ~stream)
+           )))
 
 (defn rules [dcl n l-exp r-exp ]
   `(d-> ~dcl (.newRule) (.name ~n) ~(lhs l-exp)))

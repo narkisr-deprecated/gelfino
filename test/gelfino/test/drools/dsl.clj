@@ -20,18 +20,16 @@
     (is (= 1 (count types)))
     (is (= "Message" typeName))
     (is (= "role" name))
-    (is (= "event" value))
-    ))
+    (is (= "event" value))))
 
-#_(bean (first (:descrs (bean (:lhs (bean (first (-> infos (.getDescr) (.getRules)))))))))
-#_(from-java (first (-> infos (.getDescr) (.getRules))))
+;(pprint (from-java (first (-> infos (.getDescr) (.getRules)))))
 
 (deftest simple-lhs
- (let [{{[{constraint :constraint}] :descrs} :lhs} (from-java (first (-> infos (.getDescr) (.getRules))))
-        {[{exp :expression}]:descrs} constraint
-       ]
-      (is (= "level==INFO" exp))
-  ))
+  (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} (from-java (first (-> infos (.getDescr) (.getRules))))
+        {[{exp :expression}]:descrs} constraint ]
+    (is (= "level==INFO" exp))
+    (is (= "event-stream" entry))
+    ))
 
 #_(pprint (macroexpand-1
             '(def-rulestream infos
