@@ -1,6 +1,5 @@
 (ns gelfino.drools.dsl
-  (:use clojure.pprint 
-        (clojure (string :only [split])))
+  (:use (clojure (string :only [split])))
   (:import [org.drools.lang.api DescrFactory]))
 
 (defrecord Message [level datetime])
@@ -22,13 +21,15 @@
   (map #(list 'd-> pkg '(.newImport) (list '.target (str %))) entries))
 
 (defn to-infix [[pred l r]]
-   (str l pred  r))
-
+  "turns clojure prefix notation to infix not recursive"
+   (str l pred r))
 
 (defn lhs [[_ ident _ type- c _ stream]]
-   `(d->
-      (d-> (.lhs) (.pattern ~(str type-)) (.id ~(str ident) true)
-       (d-> (.constraint ~(-> c to-infix str))))))
+  "lhs is drl when statement"
+   `(d-> (.lhs) 
+      (d-> (.pattern ~(str type-)) 
+           (.id ~(str ident) true) 
+           (.constraint ~(-> c to-infix str)))))
 
 (defn rules [dcl n l-exp r-exp ]
   `(d-> ~dcl (.newRule) (.name ~n) ~(lhs l-exp)))

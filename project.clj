@@ -12,9 +12,11 @@
                  [org.drools/drools-compiler "5.4.0.Beta2"]
                  [org.drools/knowledge-api "5.4.0.Beta2"]
                  [org.drools/drools-decisiontables "5.4.0.Beta2"]
-                 [com.sun.xml.bind/jaxb-xjc "2.2-EA"]]
+                 [com.sun.xml.bind/jaxb-xjc "2.2-EA"]
+                 ]
   
    :dev-dependencies [[lein-clojars "0.6.0"]  
+                      [com.narkisr/java.data "0.0.1-SNAPSHOT"]
                       [org.codehaus.groovy/groovy "1.7.8"]
                       [cljs-uuid "0.0.2"]
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
