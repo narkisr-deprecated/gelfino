@@ -1,16 +1,18 @@
 import gelfino.drools.bridging.Message
-import clojure.lang.IDeref
 
 global clojure.lang.IDeref actions
 
+dialect "mvel"
 
 declare Message
   @role(event)
+  @timestamp(datetime)
+  @typesafe(false)
 end
 
-rule "rule1" dialect "mvel"
+rule "rule1" 
 when
-    message:Message (level=="INFO") from entry-point entryone 
+    Number(intValue > 3) from accumulate($message:Message(level == "INFO") over window:time(1m) from entry-point entryone, count($message))
 then
     actions.deref().get("rule1").invoke()
 end
