@@ -20,10 +20,28 @@
     (.getDialectConfiguration  "mvel") (.setStrict false)))
 
 (defn build-session-from-drl [path] 
+  (set-non-strict)
+  (.add builder (ResourceFactory/newFileResource path) ResourceType/DRL)
+  (when (.hasErrors builder) 
+    (println (.toString (.getErrors builder)))
+    (throw (RuntimeException. "Unable to compile drl.")))
+  (.addKnowledgePackages knowledge-base (. builder getKnowledgePackages))
+  (.newStatefulKnowledgeSession knowledge-base))
+
+(defn- build-session []
+  (.addKnowledgePackages knowledge-base (. builder getKnowledgePackages))
+  (.newStatefulKnowledgeSession knowledge-base))
+
+(defn- add-actions [session]
+  (.setGlobal session "actions" actions) session)
+
+(defn build-session-from-pkg [pkg] 
     (set-non-strict)
-    (.add builder (ResourceFactory/newFileResource path) ResourceType/DRL)
+    (.add builder (ResourceFactory/newDescrResource pkg) ResourceType/DESCR)
     (when (.hasErrors builder) 
        (println (.toString (.getErrors builder)))
-       (throw (RuntimeException. "Unable to compile drl.")))
-    (.addKnowledgePackages knowledge-base (. builder getKnowledgePackages))
-    (.newStatefulKnowledgeSession knowledge-base ))
+       (throw (RuntimeException. "Unable to compile pkg")))
+     (-> (build-session) (add-actions)))
+
+
+
