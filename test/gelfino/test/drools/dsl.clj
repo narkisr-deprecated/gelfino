@@ -41,11 +41,11 @@
     (is (not (nil? action )))))
 
 (deftest session-run 
-   (let [session (build-session-from-pkg (.getDescr infos)) entry (.getWorkingMemoryEntryPoint session "event-stream")]
-      (.insert entry (Message. "INFO" ""))
-      (.insert entry (Message. "bla" ""))
-      (.fireAllRules session)
-    ))
+  (let [session (build-gelfino-session (.getDescr infos)) entry (.getWorkingMemoryEntryPoint session "event-stream")]
+    (.insert entry (Message. "INFO" ""))
+    (.insert entry (Message. "bla" ""))
+    (.fireAllRules session)))
+
 #_(pprint (macroexpand-1
             '(def-rulestream infos
                (import- gelfino.drools.bridging.Message)

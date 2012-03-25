@@ -19,29 +19,29 @@
   (-> builder (.getPackageBuilder) (.getPackageBuilderConfiguration) 
     (.getDialectConfiguration  "mvel") (.setStrict false)))
 
-(defn build-session-from-drl [path] 
-  (set-non-strict)
-  (.add builder (ResourceFactory/newFileResource path) ResourceType/DRL)
-  (when (.hasErrors builder) 
-    (println (.toString (.getErrors builder)))
-    (throw (RuntimeException. "Unable to compile drl.")))
-  (.addKnowledgePackages knowledge-base (. builder getKnowledgePackages))
-  (.newStatefulKnowledgeSession knowledge-base))
-
 (defn- build-session []
   (.addKnowledgePackages knowledge-base (. builder getKnowledgePackages))
   (.newStatefulKnowledgeSession knowledge-base))
 
+(defn- validate [error]
+  (when (.hasErrors builder) 
+    (println (.toString (.getErrors builder)))
+    (throw (RuntimeException. error))) )
+
+(defn build-session-from-drl [path] 
+  (set-non-strict)
+  (.add builder (ResourceFactory/newFileResource path) ResourceType/DRL)
+  (validate "Unable to compile drl.")
+  (build-session))
+
 (defn- add-actions [session]
   (.setGlobal session "actions" actions) session)
 
-(defn build-session-from-pkg [pkg] 
-    (set-non-strict)
-    (.add builder (ResourceFactory/newDescrResource pkg) ResourceType/DESCR)
-    (when (.hasErrors builder) 
-       (println (.toString (.getErrors builder)))
-       (throw (RuntimeException. "Unable to compile pkg")))
-     (-> (build-session) (add-actions)))
+(defn build-gelfino-session [pkg] 
+  (set-non-strict)
+  (.add builder (ResourceFactory/newDescrResource pkg) ResourceType/DESCR)
+  (validate "Unable to compile pkg.")
+  (-> (build-session) (add-actions)))
 
 
 
