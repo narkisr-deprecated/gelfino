@@ -8,9 +8,9 @@
       entry (.getWorkingMemoryEntryPoint session "entryone")]
   (dosync (alter actions assoc "rule1" #(println "rule fired me")))
   (.setGlobal session "actions" actions)
-  ;(.insert entry (Message. "INFO" (now)))
-  ;(.insert entry (Message. "bla" (now)))
-  ;(.insert entry (Message. "bla" (now)))
-  ;(.insert entry (Message. "INFO" (java.util.Date.)))
+  (.insert entry (Message. "INFO" (java.util.Date.)))
+  (.insert entry (Message. "INFO" (java.util.Date.)))
+  (.insert entry (Message. "INFO" (java.util.Date.)))
+  (.insert entry (Message. "INFO" (java.util.Date.)))
   (.fireAllRules session))
 
