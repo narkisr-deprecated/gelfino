@@ -4,12 +4,13 @@
         gelfino.drools.dsl gelfino.drools.bridging 
         gelfino.drools.straping clojure.java.data))
 
+(def result (atom false))
+
 (def-rulestream infos
-  (declare Message :role event) 
   (rule info-messages
         (when message :of-type Message 
           (== level "INFO" ) :from (entry-point "event-stream"))
-        (then (println "fired by rule 1"))))
+        (then (reset! result true))))
 
 (deftest import-single
   (let [imps (-> infos (.getImports)) m-imp (bean (first imps ))]
@@ -25,11 +26,6 @@
 
 (def rules-map (from-java (first (-> infos (.getRules)))))
 
-(deftest simple-lhs
-  (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} rules-map
-        {[{exp :expression}]:descrs} constraint]
-    (is (= "level==\"INFO\"" exp))
-    (is (= "event-stream" entry))))
 
 (deftest static-rhs 
   (let [{consequence :consequence } rules-map {action "infos"} @actions]
@@ -40,7 +36,15 @@
   (let [session (build-gelfino-session infos) entry (.getWorkingMemoryEntryPoint session "event-stream")]
     (.insert entry (Message. "INFO" 123))
     (.insert entry (Message. "bla" 124))
-    (.fireAllRules session)))
+    (.fireAllRules session))
+    (is (= @result true)) 
+  )
+
+(deftest level-lhs
+  (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} rules-map
+        {[{exp :expression}]:descrs} constraint]
+    (is (= "level==\"INFO\"" exp))
+    (is (= "event-stream" entry))))
 
 (deftest simple-lhs 
    (is (= (lhs '(when message :of-type Message (== level "INFO" ) :from (entry-point "event-stream")))
@@ -49,10 +53,4 @@
 ; Number(intValue > 3) from accumulate($message:Message(level == "INFO") over window:time(1m) from entry-point entryone, count($message))
 ; ((Number intValue > 3) :from (accumulate $message :of-type Message (== level "INFO") :over (window:time 1m) :from entry-point entryone  (count $message)))
 
-#_(pprint (macroexpand-1
-            '(def-rulestream infos
-               (rule info-messages
-                 (when message :of-type Message 
-                   (== level "INFO" ) :from (entry-point "event-stream"))
-                 (then (println "Rule 1"))))))
 
