@@ -12,47 +12,47 @@
         (then (println "fired by rule 1"))))
 
 (deftest import-single
-  (let [imps (-> infos (.getDescr) (.getImports)) m-imp (bean (first imps ))]
+  (let [imps (-> infos (.getImports)) m-imp (bean (first imps ))]
     (is (= (m-imp :target) "gelfino.drools.bridging.Message"))))
 
-
 (deftest declare-single
-  (let [types (-> infos (.getDescr) (.getTypeDeclarations)) {:keys [annotations typeName]} (bean (first types))
+  (let [types (-> infos (.getTypeDeclarations)) {:keys [annotations typeName]} (bean (first types))
         {:keys [name value]} (bean (get annotations "role"))]
     (is (= 1 (count types)))
     (is (= "Message" typeName))
     (is (= "role" name))
     (is (= "event" value))))
 
-;(pprint (from-java (-> infos (.getDescr))))
-
-(def rules-map (from-java (first (-> infos (.getDescr) (.getRules)))))
+(def rules-map (from-java (first (-> infos (.getRules)))))
 
 (deftest simple-lhs
   (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} rules-map
         {[{exp :expression}]:descrs} constraint]
     (is (= "level==\"INFO\"" exp))
-    (is (= "event-stream" entry))
-    ))
+    (is (= "event-stream" entry))))
 
 (deftest static-rhs 
-  (let [{consequence :consequence } rules-map {action "info-messages"} @actions]
-    (is (= "actions.deref().get(\"info-messages\").invoke();" consequence))
+  (let [{consequence :consequence } rules-map {action "infos"} @actions]
+    (is (= "actions.deref().get(\"infos\").invoke();\n" consequence))
     (is (not (nil? action )))))
 
 (deftest session-run 
-  (let [session (build-gelfino-session (.getDescr infos)) entry (.getWorkingMemoryEntryPoint session "event-stream")]
-    (.insert entry (Message. "INFO" ""))
-    (.insert entry (Message. "bla" ""))
+  (let [session (build-gelfino-session infos) entry (.getWorkingMemoryEntryPoint session "event-stream")]
+    (.insert entry (Message. "INFO" 123))
+    (.insert entry (Message. "bla" 124))
     (.fireAllRules session)))
+
+(deftest simple-lhs 
+   (is (= (lhs '(when message :of-type Message (== level "INFO" ) :from (entry-point "event-stream")))
+         "$message:Message(level==\"INFO\") from entry-point \"event-stream\" ")))
+
+; Number(intValue > 3) from accumulate($message:Message(level == "INFO") over window:time(1m) from entry-point entryone, count($message))
+; ((Number intValue > 3) :from (accumulate $message :of-type Message (== level "INFO") :over (window:time 1m) :from entry-point entryone  (count $message)))
 
 #_(pprint (macroexpand-1
             '(def-rulestream infos
-               (import- gelfino.drools.bridging.Message)
-               (declare Message :role event) 
                (rule info-messages
-                     (when message :of-type Message 
-                       (== level "INFO" ) :from (entry-point "event-stream"))
-                     (then (println "Rule 1"))))))
-
+                 (when message :of-type Message 
+                   (== level "INFO" ) :from (entry-point "event-stream"))
+                 (then (println "Rule 1"))))))
 
