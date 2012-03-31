@@ -61,13 +61,14 @@ end"
     [(['window :time t unit] :seq)] (<< "window:time(~(t)~(unit))")
     [(['window :length l] :seq)] (<< "window:length(~(l))")))
 
-(defn is-type? [t] (not (nil? (re-find #"[A-Z][a-z]*" (str t)))))
+(defn is-type? [t] (not (nil? (re-find #"^[A-Z][a-z]*" (str t)))))
 
 (defn lhs [body]
   "converting an s-exp to drl lhs-exp see http://tinyurl.com/d7hpovl"
   (match [body]
      [(['when & r] :seq)] (lhs r)
      [([bind ':> (t :when is-type?) & r] :seq)] (<< "~{bind}:~{t}~(lhs r)"); pattern with bind
+     [([(t :when is-type?) & r] :seq)] (<< "~{t}~(lhs r)"); pattern 
      [([exp ':from dest & r] :seq)] (<< "~(lhs exp) from ~(lhs dest) ~(lhs r)")
      [([:over w & r] :seq)] (<< "~(window w) ~(lhs r)")
      [([(o :when operator?) f s] :seq) :as c] (<< "(~(reduce str (map pr-str (to-infix c))))")
