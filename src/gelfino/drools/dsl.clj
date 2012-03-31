@@ -61,7 +61,9 @@ end"
     ))
 
 
-(defmacro def-rulestream [sname  [_ t _ role] [_ n _when then]]
+(defmacro def-rulestream [sname [_ n _when then]]
   `(do 
      ~(register-action sname then)
-     (def ~sname (parse-rule (rule-body ~(str sname) ~(lhs _when))))))
+     (def ~sname 
+       (parse-rule 
+         (rule-body ~(str sname) ~(lhs _when))))))
