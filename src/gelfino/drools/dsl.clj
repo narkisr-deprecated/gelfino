@@ -53,12 +53,21 @@ end"
 
 (defn operator?[o] (#{'< '> '<= '>= '==} o))
 
+(defn accumulate-fn [f] (#{'average 'min 'max 'count 'sum 'collectList 'collectSet}))
+
+(defn window [exp]
+  "windows s-exp to l-exp http://tinyurl.com/d8ya6dn" 
+  (match [exp]
+    [(['window :time t unit] :seq)] (<< "window:time(~(t)~(unit))")
+    [(['window :length l] :seq)] (<< "window:length(~(l))")))
+
 (defn lhs [body]
-  "converting an s-exp to drl lhs-exp"
+  "converting an s-exp to drl lhs-exp see http://tinyurl.com/d7hpovl"
   (match [body]
      [(['when & r] :seq)] (lhs r)
-     [([v ':> t & r] :seq)] (<< "$~{v}:~{t}~(lhs r)"); pattern
-     [([exp ':from point & r] :seq)] (<< "~(lhs exp) from ~(lhs point) ~(lhs r)")
+     [([v ':> t & r] :seq)] (<< "~{v}:~{t}~(lhs r)"); pattern
+     [([exp ':from dest & r] :seq)] (<< "~(lhs exp) from ~(lhs dest) ~(lhs r)")
+     [([:over w & r] :seq)] (<< "~(window w) ~(lhs r)")
      [([(o :when operator?) f s] :seq) :as c] (<< "(~(reduce str (map pr-str (to-infix c))))")
      [(['entry-point point & r] :seq)] (<< "entry-point \"~{point}\"~(lhs r)")
      :else ""

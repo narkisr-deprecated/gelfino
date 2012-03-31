@@ -8,8 +8,9 @@
 
 (def-rulestream infos
   (rule info-messages
-        (when message :> Message (== level "INFO" ) :from (entry-point "event-stream"))
-        (then (reset! result true))))
+     (when $message :> Message (== level "INFO" ) 
+       :from (entry-point "event-stream"))
+     (then (reset! result true))))
 
 (deftest import-single
   (let [imps (-> infos (.getImports)) m-imp (bean (first imps ))]
@@ -45,14 +46,14 @@
     (is (= "event-stream" entry))))
 
 (deftest simple-lhs 
-   (is (= (lhs '(when message :> Message (== level "INFO" ) :from (entry-point "event-stream")))
+   (is (= (lhs '(when $message :> Message (== level "INFO" ) :from (entry-point "event-stream")))
          "$message:Message(level==\"INFO\") from entry-point \"event-stream\" ")))
 
 #_(deftest complex-lhs 
   (is (= (lhs (when (Number (> intValue 3)) :from 
-           (accumulate message :of-type Message(== level "INFO") :over 
-             (window:time 1 m) :from entry-point entryone , (count $message))))
-    "Number(intValue > 3) from accumulate($message:Message(level == \"INFO\") over window:time(1m) from entry-point entryone, count($message))")))
+                (accumulate $message :> Message (== level "INFO") :over (window :time 1 m)
+                  :from (entry-point entryone)  (count $message))))
+    "Number(intValue > 3) from accumulate($message:Message(level == \"INFO\") over window:time(1m) from entry-point entryone  count($message))")))
 
 ; Number(intValue > 3) from accumulate($message:Message(level == "INFO") over window:time(1m) from entry-point entryone, count($message))
 ; ((Number intValue > 3) :from (accumulate $message :of-type Message (== level "INFO") :over (window:time 1m) :from entry-point entryone  (count $message)))
