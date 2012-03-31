@@ -45,11 +45,12 @@ end"
 
 (defn parse-rule [text]
   (let [parser (DrlParser.) reader (StringReader. text) result (.parse parser reader)]
-    (validate parser "failed to parse") 
+    (validate parser (<< "failed to parse ~{text}"))
     result
     ))
 
 (defn lhs [body]
+  "converting an s-exp to drl lhs-exp"
   (match [body]
      [(['when & r] :seq)] (lhs r)
      [([v ':of-type t & r] :seq)] (<< "$~{v}:~{t}~(lhs r)")
