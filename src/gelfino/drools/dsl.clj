@@ -49,8 +49,6 @@ end"
     result
     ))
 
-(def keywords #{'Number})
-
 (defn operator?[o] (#{'< '> '<= '>= '==} o))
 
 (defn acc-fn? [f] 
@@ -78,10 +76,6 @@ end"
      [(['entry-point point & r] :seq)] (<< "entry-point \"~{point}\"~(lhs r)")
      :else ""
     ))
-
-#_(lhs '(when Number (> intValue 3) :from 
-        (accumulate $message :> Message (== level "INFO") :over (window :time 1 m)
-         :from (entry-point entryone)  (count $message))))
 
 (defmacro def-rulestream [sname [_ n _when then]]
   `(do 
