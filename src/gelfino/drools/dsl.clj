@@ -49,13 +49,17 @@ end"
     result
     ))
 
+(def keywords #{'Number})
+
+(defn operator?[o] (#{'< '> '<= '>= '==} o))
+
 (defn lhs [body]
   "converting an s-exp to drl lhs-exp"
   (match [body]
      [(['when & r] :seq)] (lhs r)
-     [([v ':of-type t & r] :seq)] (<< "$~{v}:~{t}~(lhs r)")
+     [([v ':> t & r] :seq)] (<< "$~{v}:~{t}~(lhs r)"); pattern
      [([exp ':from point & r] :seq)] (<< "~(lhs exp) from ~(lhs point) ~(lhs r)")
-     [(['== f s] :seq) :as c] (<< "(~(reduce str (map pr-str (to-infix c))))")
+     [([(o :when operator?) f s] :seq) :as c] (<< "(~(reduce str (map pr-str (to-infix c))))")
      [(['entry-point point & r] :seq)] (<< "entry-point \"~{point}\"~(lhs r)")
      :else ""
     ))
