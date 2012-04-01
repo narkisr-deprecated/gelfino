@@ -8,21 +8,19 @@
 (def result (ref {:infos false :four-errors false}))
 
 (defrule infos
-  (rule info-messages
-     (when $message :> Message (== level "INFO" ) 
-       :from (entry-point "event-stream"))
-     (then 
-       (dosync 
-         (alter result assoc :infos true)))))
+   (when $message :> Message (== level "INFO" ) 
+      :from (entry-point "event-stream"))
+   (then 
+     (dosync 
+       (alter result assoc :infos true))))
 
 (defrule four-errors
-  (rule info-messages
-     (when Number (> intValue 3) :from 
-       (accumulate $message :> Message (== level "ERROR") :over (window :time 1 m)
-       :from (entry-point event-stream) (count $message)))
-     (then 
-       (dosync 
-         (alter result assoc :four-errors true)))))
+   (when Number (> intValue 3) :from 
+      (accumulate $message :> Message (== level "ERROR") :over (window :time 1 m)
+      :from (entry-point event-stream) (count $message)))
+   (then 
+     (dosync 
+       (alter result assoc :four-errors true))))
 
 (deftest import-single
   (let [imps (-> infos (.getImports)) m-imp (bean (first imps ))]

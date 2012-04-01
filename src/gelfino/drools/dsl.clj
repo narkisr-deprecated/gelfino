@@ -77,7 +77,7 @@ end"
      :else ""
     ))
 
-(defmacro defrule [sname [_ n _when then]]
+(defmacro defrule [sname _when then]
   `(do 
      ~(register-action sname then)
      (def ~sname 
