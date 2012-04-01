@@ -9,6 +9,6 @@
   (is (= (lhs '(when Number (> intValue 3) :from 
                 (accumulate $message :> Message (== level "INFO") :over (window :time 1 m)
                   :from (entry-point event-stream)  (count $message))))
-    "Number(intValue>3) from accumulate($message:Message(level==\"INFO\") over window:time(1m) from entry-point \"event-stream\" count($message)) ")))
+    "Number(intValue>3) from accumulate($message:Message(level==\"INFO\") over window:time(1m) from entry-point \"event-stream\" ,count($message)) ")))
 
 
