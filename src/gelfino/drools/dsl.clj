@@ -69,7 +69,7 @@ end"
      [(['accumulate & r] :seq)] (<< "accumulate(~(lhs r))")
      [([bind ':> & r] :seq)] (<< "~{bind}:~(lhs r)"); pattern with bind
      [([(t :when is-type?) & r] :seq)] (<< "~{t}~(lhs r)"); pattern 
-     [([([(f :when acc-fn?) & args] :seq) & r] :seq)] (<< "~{f}~{args}~(lhs r)" ); accumulate function
+     [([([(f :when acc-fn?) & args] :seq) & r] :seq)] (<< ",~{f}~{args}~(lhs r)" ); accumulate function
      [([':from dest & r] :seq)]  (<< "from ~(lhs dest) ~(lhs r)")
      [([':over win & r] :seq)] (<< "over ~(window win) ~(lhs r)")
      [([([(o :when operator?) f s] :seq) :as c & r] :seq)] (<< "(~(reduce str (map pr-str (to-infix c)))) ~(lhs r)")
