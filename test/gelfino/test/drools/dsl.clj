@@ -7,7 +7,7 @@
 
 (def result (ref {:infos false :four-errors false}))
 
-(def-rulestream infos
+(defrule infos
   (rule info-messages
      (when $message :> Message (== level "INFO" ) 
        :from (entry-point "event-stream"))
@@ -15,7 +15,7 @@
        (dosync 
          (alter result assoc :infos true)))))
 
-(def-rulestream four-errors
+(defrule four-errors
   (rule info-messages
      (when Number (> intValue 3) :from 
        (accumulate $message :> Message (== level "ERROR") :over (window :time 1 m)
@@ -43,28 +43,33 @@
     (is (= "actions.deref().get(\"infos\").invoke();\n" consequence))
     (is (not (nil? action )))))
 
-(deftest infos-session-run 
-  (let [session (drools-session :pkg infos) 
-        entry (.getWorkingMemoryEntryPoint session "event-stream")]
-    (.insert entry (Message. "INFO" 123))
-    (.insert entry (Message. "bla" 124))
-    (.fireAllRules session))
-  (is (= (@result :infos) true)))
+(def session (drools-session :pkgs [infos four-errors] :clock "pseudo"))
+
+(def now (.getTime (java.util.Date.)))
+
 
 (deftest infos-session-run 
-  (let [session (drools-session :pkg four-errors :clock "pseudo" ) 
-        clock (.getSessionClock session) 
-        now (.getTime (java.util.Date.))
+  (let [clock (.getSessionClock session) 
         entry (.getWorkingMemoryEntryPoint session "event-stream")]
-    ;(.insert entry (Message. "INFO" now ))
-    (.insert entry (Message. "ERROR" now))
+    (.insert entry (Message. "INFO" now))
+    (.insert entry (Message. "bla" (+ 1000 now)))
+    (.advanceTime clock 1 TimeUnit/SECONDS)
+    (.fireAllRules session)
+    (is (= (@result :infos) true))))
+
+
+(deftest four-in-a-row
+  (let [clock (.getSessionClock session) 
+        entry (.getWorkingMemoryEntryPoint session "event-stream")]
+    (.insert entry (Message. "ERROR" (+ 3000 now)))
     (.insert entry (Message. "ERROR" (+ 4000 now)))
     (.insert entry (Message. "INFO" (+ 5000 now)))
     (.insert entry (Message. "ERROR" (+ 6000 now)))
     (.insert entry (Message. "ERROR" (+ 7000 now)))
     (.advanceTime clock 10 TimeUnit/SECONDS)
-    (.fireAllRules session))
-  (is (= (@result :four-errors) true)))
+    (.fireAllRules session)
+    (is (= (@result :four-errors) true))))
+
 
 (deftest level-lhs
   (let [{{[{constraint :constraint {entry :entryId} :source}] :descrs} :lhs} rules-map

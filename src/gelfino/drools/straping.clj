@@ -35,12 +35,13 @@
 (defn- add-actions [session]
   (.setGlobal session "actions" actions) session)
 
-(defn drools-session [&{:keys [pkg path clock] :or {clock "realtime"}}] 
+(defn drools-session [&{:keys [pkgs path clock] :or {clock "realtime"}}] 
   (set-non-strict)
-  (if (nil? pkg)
+  (if (nil? pkgs)
     (.add builder (ResourceFactory/newFileResource path) ResourceType/DRL)
-    (.add builder (ResourceFactory/newDescrResource pkg) ResourceType/DESCR))
+    (doseq [p pkgs]
+      (.add builder (ResourceFactory/newDescrResource p) ResourceType/DESCR)))
   (validate "Unable to compile.")
-  (if (nil? pkg)
+  (if (nil? pkgs)
     (build-session clock) 
     (add-actions (build-session clock))))
