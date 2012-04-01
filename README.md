@@ -1,3 +1,4 @@
+
 ## Intro 
 
 Gelfino is a tiny embeddable [Gelf](https://github.com/Graylog2/graylog2-docs/wiki/GELF) server written in pure Clojure, Gelfino enables real time processing of log events through streams.
@@ -6,6 +7,7 @@ Streams are filtered out of the main messages river and custom actions can be de
 
 One main use case of Gelfino is as forwarding destination from [graylog2-server](https://github.com/Graylog2/graylog2-server), as an example we can stream forwarded events into [fnordmetric](https://github.com/paulasmuth/fnordmetric).
 
+[![Build Status](https://secure.travis-ci.org/narkisr/gelfino.png)](http://travis-ci.org/narkisr/gelfino)
 ## Usage
 Gelfino is meant  to be used as library within a Clojure project, we use a DSL to define our streams and actions.
 
