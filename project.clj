@@ -25,5 +25,6 @@
 
     :aot [gelfino.drools.bridging]
    :resource-paths ["src/main/resources"]
-   :repositories {"jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
+   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/" 
+                  "jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
 )
