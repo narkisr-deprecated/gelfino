@@ -4,7 +4,7 @@
 
 (defn now [] (java.util.Date.))
 
-(let [session (build-session-from-drl "src/main/resources/example.drl") 
+(let [session (drools-session :path "src/main/resources/example.drl") 
       entry (.getWorkingMemoryEntryPoint session "entryone")]
   (dosync (alter actions assoc "rule1" #(println "rule fired me")))
   (.setGlobal session "actions" actions)
