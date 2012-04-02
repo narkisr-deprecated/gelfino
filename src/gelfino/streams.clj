@@ -68,15 +68,20 @@
       (fn [jsons#] 
         (receive-all jsons#
           (fn [m#] 
-            (info m#)
-            (.insert entry# (Message. (m# :level) (m# :timestamp)))
-            (.fireAllRules session#)))))))
+            (if (or (nil? (.longValue (m# :timestamp))) (nil? (m# :level)))
+              (error "no timestamp or level value given for message")          
+              (do
+                (info (str m#))
+                (.insert entry# (Message. (m# :level) (.longValue (m# :timestamp))))
+                (.fireAllRules session#)))))))))
+
+
 
 (defn selectors-stream [name rest]
   `(let [stream-input# (channel)]
      (swap! stream-channels assoc ~(keyword name) 
-       (fn [jsons#] 
-         (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
+            (fn [jsons#] 
+              (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
 
 (defmacro defstream
   "A stream of messages filtered out of the entire messages recieved 

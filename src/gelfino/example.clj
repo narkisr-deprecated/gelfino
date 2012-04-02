@@ -23,7 +23,7 @@
 (defstream level :level (fn [v] (= "INFO" v)) (fnordic-even "info"))
 
 (defrule inf-rule
-   (when $message :> Message (== level "INFO" ) 
+   (when $message :> Message (== level 6 ) 
       :from (entry-point "event-stream"))
    (then 
      (info "info detected by drools")))
