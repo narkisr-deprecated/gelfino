@@ -1,15 +1,15 @@
 (ns gelfino.streams
   (:use 
-    (gelfino.drools dsl bridging straping)
+    (gelfino.drools dsl straping)
    [clojure.tools.logging :only (trace info debug error)]
    (gelfino compression constants chunked header)
     lamina.core)
   (:require 
     [cheshire.core :as cheshire]
+    [cheshire.parse :as cparse]
     [clojure.walk :as walk]
-    [gelfino.statistics :as stats])
-  (:import gelfino.drools.bridging.Message
-           java.util.concurrent.TimeUnit))
+    [gelfino.statistics :as stats]))
+
 
 (def base-channels (atom {}))
 (def stream-channels (atom {}))
@@ -24,10 +24,11 @@
         (error (str "No matching handling found for " type)))))
 
 (defn- into-json [s]
-  (let [json-m (cheshire/parse-string s true)]
-    (debug json-m) 
-    (stats/inc-processed)
-     json-m))
+  (binding [cparse/*use-bigdecimals?* true]
+    (let [json-m (cheshire/parse-string s true)]
+      (debug json-m) 
+      (stats/inc-processed)
+      json-m)))
 
 (defn initialize-channels []
   (reset! base-channels {:input (channel) :output (channel)})
@@ -55,33 +56,22 @@
 (defn filter-fn [pred-pairs]
   (let [pairs  (map #(into [] % ) (partition 2 pred-pairs))
         preds (map (fn [[k v]] [k (into-pred v)]) pairs)]
-     (fn [m] (every? (fn [[k v]] (v (m k))) preds))))
+    (fn [m] (every? (fn [[k v]] (v (m k))) preds))))
 
 (defn apply-sym [orig form]
   (let [new (gensym (name orig))]
     (concat (list 'fn [new]) (list (walk/postwalk #(if (= % orig) new %) form)))))
 
 (defn drools-stream [name rule]
- `(let [stream-input# (channel) session# (drools-session :pkgs [~rule]) 
-        entry# (.getWorkingMemoryEntryPoint session# "event-stream")]
-    (swap! stream-channels assoc ~(keyword name) 
-      (fn [jsons#] 
-        (receive-all jsons#
-          (fn [m#] 
-            (if (or (nil? (.longValue (m# :timestamp))) (nil? (m# :level)))
-              (error "no timestamp or level value given for message")          
-              (do
-                (info (str m#))
-                (.insert entry# (Message. (m# :level) (.longValue (m# :timestamp))))
-                (.fireAllRules session#)))))))))
-
-
+  `(let [stream-input# (channel)]
+     (swap! stream-channels assoc ~(keyword name) 
+       (fn [jsons#] (receive-all jsons# (drools-pusher ~rule))))))
 
 (defn selectors-stream [name rest]
   `(let [stream-input# (channel)]
      (swap! stream-channels assoc ~(keyword name) 
-            (fn [jsons#] 
-              (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
+       (fn [jsons#] 
+         (receive-all (filter* (filter-fn '~rest) jsons#) ~(apply-sym 'message (last rest)))))))
 
 (defmacro defstream
   "A stream of messages filtered out of the entire messages recieved 

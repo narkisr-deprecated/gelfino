@@ -6,7 +6,8 @@
     [org.drools.builder KnowledgeBuilder KnowledgeBuilderError KnowledgeBuilderErrors KnowledgeBuilderFactory]
     org.drools.conf.EventProcessingOption
     org.drools.builder.ResourceType org.drools.io.ResourceFactory 
-    org.drools.runtime.StatefulKnowledgeSession))
+    org.drools.runtime.StatefulKnowledgeSession
+    gelfino.drools.bridging.Message))
 
 (def builder (KnowledgeBuilderFactory/newKnowledgeBuilder))
 
@@ -45,3 +46,11 @@
   (if (nil? pkgs)
     (build-session clock) 
     (add-actions (build-session clock))))
+
+(defn drools-pusher [rule]
+  "Creates an fn with session in scope for pushing messages into drools with given rule"
+  (let [session (drools-session :pkgs [rule]) 
+         entry (.getWorkingMemoryEntryPoint session "event-stream")]
+    (fn [m]
+      (.insert entry (Message. (m :level) (.longValue (* 1000 (m :timestamp)))))
+      (.fireAllRules session))))
