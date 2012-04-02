@@ -8,7 +8,7 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [log4j/log4j "1.2.16"]
                  [tron "0.5.2"]
-                 [cheshire "2.1.0"]
+                 [cheshire "3.1.0"]
                  [org.drools/drools-core "5.3.0.Final"]
                  [org.drools/drools-compiler "5.3.0.Final"]
                  [org.drools/knowledge-api "5.3.0.Final"]
