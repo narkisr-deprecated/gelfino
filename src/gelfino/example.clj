@@ -28,8 +28,14 @@
    (then 
      (info "info detected by drools")))
 
-;(pprint (macroexpand '(defstream inf :rule infos)))
-(defstream informantion :rule inf-rule)
+(defrule four-errors
+   (when Number (> intValue 3) :from 
+      (accumulate $message :> Message (== level 4) :over (window :time 1 m)
+      :from (entry-point event-stream) (count $message)))
+   (then (info "4 erros happend in 1 min")))
+
+(defstream infos :rule inf-rule)
+(defstream errors :rule four-errors)
 
 
 (defn -main [host port]
