@@ -1,5 +1,5 @@
 (ns gelfino.test.drools.dsl
-  (:import [gelfino.drools.bridging Message] 
+  (:import gelfino.drools.bridging.Message 
             java.util.concurrent.TimeUnit)
   (:use clojure.test 
         gelfino.drools.dsl gelfino.drools.bridging 
@@ -44,7 +44,6 @@
 (def session (drools-session :pkgs [infos four-errors] :clock "pseudo"))
 
 (def now (.getTime (java.util.Date.)))
-
 
 (deftest infos-session-run 
   (let [clock (.getSessionClock session) 
