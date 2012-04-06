@@ -5,7 +5,6 @@
    [cheshire.core :as cheshire]
    [redis.core :as redis])
   (:use 
-    clojure.pprint
     [clojure.tools.logging :only (info)]
     gelfino.drools.dsl 
     (gelfino bootstrap streams)))
@@ -34,11 +33,11 @@
       :from (entry-point event-stream) (count $message)))
    (then (info "4 erros happend in 1 min")))
 
+
 (defstream infos :rule inf-rule)
 (defstream errors :rule four-errors)
-
 
 (defn -main [host port]
   (start-processing host port))
 
-(-main "0.0.0.0" "12201") 
+#_(-main "0.0.0.0" "12201") 
