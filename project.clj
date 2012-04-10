@@ -1,4 +1,4 @@
-(defproject com.narkisr/gelfino "0.3.0"
+(defproject com.narkisr/gelfino "0.3.1"
   :description "An embeddable Gelf server library"
   :dependencies [[org.clojure/data.json "0.1.1"]  
                  [org.clojure/tools.logging "0.2.3"]  
@@ -13,7 +13,7 @@
                  [org.drools/drools-compiler "5.3.0.Final"]
                  [org.drools/knowledge-api "5.3.0.Final"]
                  [org.drools/drools-decisiontables "5.3.0.Final"]
-                 [org.clojure/core.match "0.2.0-alpha9"]
+                 [aot-match/aot-match "0.2.0-alpha10-aot"]
                  [com.sun.xml.bind/jaxb-xjc "2.2-EA"]]
   
    :dev-dependencies [[lein-clojars "0.6.0"]  
@@ -23,7 +23,8 @@
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
                       #_[org.graylog2/gelf4j "0.9.6"]]
 
-    :aot [gelfino.drools.bridging]
+   :aot [gelfino.drools.bridging]
+   :main gelfino.example
    :resource-paths ["src/main/resources"]
    :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/" 
                   "jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
