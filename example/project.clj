@@ -6,5 +6,8 @@
                  [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]]
 
   :main gelfino.example.core 
-  
+
+  :dev-dependencies [ [org.clojars.scott/lein-nailgun "1.1.0"] ]
+
+ 
   )
