@@ -6,26 +6,23 @@
   (:use (gelfino bootstrap streams)
          gelfino.drools.dsl
         [clojure.tools.logging :only (info)])
-  (:gen-class) 
-  )
+  (:gen-class))
 
 
 (defn fnordic-even [type]
   (let [uuid  (uuid/make-v4)]
-    (redis/with-server {:host "127.0.0.1" :port 6379 :db 15 }
+    (redis/with-server {:host "127.0.0.1" :port 9191 :db 15 }
       (redis/set (str "fnordmetric-event-" uuid) (cheshire/generate-string {:_type type}))
       (redis/expire (str "fnordmetric-event-" uuid)  60) 
       (redis/lpush "fnordmetric-queue" uuid))))
 
-(defstream not-too-long :short_message #".*unicorn.*" (fnordic-even "unicorn_seen"))
-
-(defstream level :level (fn [v] (= "INFO" v)) (fnordic-even "info"))
+(defstream unicorns :short_message #".*unicorn.*" (fnordic-even "unicorn_seen"))
 
 (defrule four-errors
    (when Number (> intValue 3) :from 
       (accumulate $message :> Message (== level 4) :over (window :time 1 m)
       :from (entry-point event-stream) (count $message)))
-   (then (info "4 erros happend in 1 min")))
+   (then (fnordic-even "four_errors")))
 
 (defstream errors :rule four-errors)
 
