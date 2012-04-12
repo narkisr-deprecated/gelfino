@@ -21,7 +21,8 @@
                       [org.codehaus.groovy/groovy "1.7.8"]
                       [cljs-uuid "0.0.2"]
                       [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]
-                      #_[org.graylog2/gelf4j "0.9.6"]]
+                      [org.clojars.scott/lein-nailgun "1.1.0"]
+                      ]
 
    :aot [gelfino.drools.bridging]
    :main gelfino.example
