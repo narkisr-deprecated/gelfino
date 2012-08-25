@@ -6,7 +6,7 @@
    [redis.core :as redis])
   (:use 
     [clojure.tools.logging :only (info)]
-    gelfino.drools.dsl 
+     gelfino.drools.dsl 
     (gelfino bootstrap streams)))
 
 
@@ -17,7 +17,7 @@
       (redis/expire (str "fnordmetric-event-" uuid)  60) 
       (redis/lpush "fnordmetric-queue" uuid))))
 
-(defstream unicorns :short_message #".*unicorn.*" (fnordic-even "seen-unicorn"))
+(defstream unicorns :short_message #".*unicorn.*" (println "seen-unicorn"))
 
 (defstream level :level (fn [v] (= "INFO" v)) (fnordic-even "info"))
 
@@ -40,4 +40,4 @@
 (defn -main [host port]
   (start-processing host port))
 
-#_(-main "0.0.0.0" "12201") 
+(-main "0.0.0.0" "12201") 
