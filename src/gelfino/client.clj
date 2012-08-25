@@ -31,7 +31,7 @@
     (raw-send comp-m "0.0.0.0"))) 
 
 ;(connect)
-(send-> {:short_message "i am a unicorn"})
+;(send-> {:short_message "i am a unicorn"})
 
 (defn random-string [length]
   (let [ascii-codes (concat (range 48 58) (range 66 91) (range 97 123))]
