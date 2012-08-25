@@ -10,3 +10,4 @@ statistics.log
 example/classes
 example/.lein-deps-sum
 .vagrant
+target
