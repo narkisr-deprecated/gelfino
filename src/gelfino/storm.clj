@@ -17,10 +17,9 @@
     (nextTuple []
       (if-let [event (peek @events)]
          (do 
-          (info event) 
+          (send events pop)
           (emit-spout! collector [event])
-          (send events pop))         
-         (Thread/sleep 500)))
+          )))
     (ack [id])))
 
 
@@ -31,7 +30,7 @@
      (execute [tuple]
       (swap! counts inc)
       (info @counts)
-      (emit-bolt! collector [@counts] :anchor tuple)))))
+      (emit-bolt! collector [@counts])))))
 
 
 (defn mk-topology []
