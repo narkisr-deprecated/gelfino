@@ -69,8 +69,8 @@
       (raw-send comp-m to)))) 
 
 ;(connect)
-(send-> "0.0.0.0"
-   {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
+#_(send-> "0.0.0.0" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
+#_(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn"})
 
 
 (defn random-string [length]

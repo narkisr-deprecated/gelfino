@@ -3,10 +3,11 @@
   :dependencies [[org.clojure/data.json "0.1.1"]  
                  [org.clojure/tools.logging "0.2.3"]  
                  [lamina "0.4.1-alpha1"] 
-                 [org.clojure/clojure "1.3.0"]
+                 [org.clojure/clojure "1.4.0"]
                  [org.clojure/core.incubator "0.1.1"]
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [log4j/log4j "1.2.16"]
+                 [storm "0.8.1"]
                  [tron "0.5.2"]
                  [cheshire "3.1.0"]
                  [org.drools/drools-core "5.3.0.Final"]
@@ -27,7 +28,7 @@
   :plugins [[lein-tarsier "0.9.3"]] 
 
   :aot [gelfino.drools.bridging]
-  :main gelfino.example
+  :main gelfino.storm
   :resource-paths ["src/main/resources"]
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/" 
                  "jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
