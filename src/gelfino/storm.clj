@@ -11,8 +11,9 @@
 
 (defstream unicorns :short_message #".*unicorn.*" (send events conj message))
 
-(defspout events-spout ["event"]
+(defspout events-spout ["event"] {:prepare true}
   [conf context collector]
+  (start-processing "0.0.0.0" "12201")
   (spout
     (nextTuple []
       (if-let [event (peek @events)]
@@ -41,10 +42,20 @@
 (defn run-local! []
   (let [cluster (LocalCluster.)]
     (.submitTopology cluster "gelfino" {TOPOLOGY-DEBUG true} (mk-topology))
-    (start-processing "0.0.0.0" "12201")
+    ;(start-processing "0.0.0.0" "12201")
     ;(Thread/sleep 10000)
     ;(.shutdown cluster)
     ))
 
-(defn -main [] (run-local!))
+(defn submit-topology! [name]
+  (StormSubmitter/submitTopology
+   name
+   {TOPOLOGY-DEBUG true
+    TOPOLOGY-WORKERS 3}
+   (mk-topology)))
+
+(defn -main 
+  ([] (run-local!))
+  ([name] (submit-topology! name))  
+  )
 ;(run-local!)
