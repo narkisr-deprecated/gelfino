@@ -1,13 +1,10 @@
-(defproject gelfino-example "1.0"
-  :description "FIXME: write description"
-  :dependencies [[com.narkisr/gelfino "0.3.1"] 
+(defproject gelfino-example "1.1"
+  :description "An example project of using gelfino and fnordmetric"
+  :dependencies [[com.narkisr/gelfino "0.4.0"] 
                  [org.clojure/clojure "1.3.0"]
-                 [cljs-uuid "0.0.2"]
-                 [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]]
+                 [com.taoensso/carmine "0.10.3"]
+                 [cljs-uuid "0.0.2"]]
 
-  :main gelfino.example.core 
 
-  :dev-dependencies [ [org.clojars.scott/lein-nailgun "1.1.0"] ]
-
- 
+  :plugins [[lein-tarsier "0.9.3"]] 
   )
