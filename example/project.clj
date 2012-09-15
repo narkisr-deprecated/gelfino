@@ -7,4 +7,5 @@
 
 
   :plugins [[lein-tarsier "0.9.3"]] 
+  :aot [gelfino.example.core]
   )

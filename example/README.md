@@ -8,7 +8,7 @@ This is an example project that showcases how to use gelfino with systems like [
 
 * [redis](http://redis.io/) is used as the message queue into which gelfino writes and fnordmetric pull events from.
 
-* [lein](git://github.com/technomancy/leiningen.git) is the easiest way to get going with Clojure.
+* [lein2](git://github.com/technomancy/leiningen.git) is the easiest way to get going with Clojure.
 
 
 # Walk through
