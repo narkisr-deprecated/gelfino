@@ -69,14 +69,14 @@
            (++ (header i d (count csr)) (Arrays/copyOfRange comp-m s e))) csr (range))))
 
 (defn send-> [to m] 
-  (let [^"[B" comp-m (gzip (generate-string (merge message-template m)))]
+  (let [^"[B" comp-m (gzip (generate-string (merge message-template m {:timestamp (.getTime (Date.))})))]
     (if (> (alength comp-m) (max-chunk-size))
       (doseq [c (chunks comp-m to)] (raw-send c to))
       (raw-send comp-m to)))) 
 
 ;(connect)
 ;(send-> "localhost" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
-;(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn"})
+;(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn" :level 4})
 
 
 (defn random-string [length]
