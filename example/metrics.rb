@@ -2,69 +2,35 @@ require "fnordmetric"
 
 FnordMetric.namespace :gelfino do
 
-# numeric (delta) gauge, 1-hour tick
-gauge :unicorns_seen_per_hour, :tick => 1.hour.to_i, :title => "Unicorns seenper Hour"
-gauge :four_errors_seen_per_hour, :tick => 1.hour.to_i, :title => "Four errors in a row"
+  event(:unicorn_seen) do
+    incr :unicorns_seen_per_second,  1
+  end
 
-# on every event like { _type: 'unicorn_seen' }
-event(:unicorn_seen) do
-  # increment the unicorns_seen_per_hour gauge by 1
-  incr :unicorns_seen_per_hour 
-end
-#
-# on every event like { _type: 'unicorn_seen' }
-event(:four_errors) do
-  # increment the unicorns_seen_per_hour gauge by 1
-  incr :four_errors_seen_per_hour 
-end
+  event(:four_errors) do
+    incr :four_errors_seen_per_hour , :via_gelfino , 1
+  end
 
+ gauge :unicorns_seen_per_second, :tick => 1.minute
 
-# draw a timeline showing the gauges value, auto-refresh every 2s
-widget 'Unicorns', {
-  :title => "Unicorn-Sightings per Hour",
-  :type => :timeline,
-  :gauges => [:unicorns_seen_per_hour], 
-  :include_current => true,
-  :plot_style => :areaspline,
-  :autoupdate => 10
-}
-
-widget 'Unicorns', {
-  :title => "Numbers",
-  :type => :numbers,
-  :gauges => [:unicorns_seen_per_hour], 
-  :include_current => true,
-  :plot_style => :vertical,
-  :order_by => :value,
-  :autoupdate => 2
-}
-
-widget 'Errors', {
-  :title => "Four errors in a row",
-  :type => :timeline,
-  :gauges => [:four_errors_seen_per_hour], 
-  :include_current => true,
-  :plot_style => :areaspline,
-  :autoupdate => 10
-}
-
-widget 'Errors', {
-  :title => "Numbers",
-  :type => :numbers,
-  :gauges => [:four_errors_seen_per_hour], 
-  :include_current => true,
-  :plot_style => :vertical,
-  :order_by => :value,
-  :autoupdate => 2
-}
+  widget 'unicorns', {
+    :title => "Events per Minute",
+    :type => :timeline,
+    :width => 100,
+    :gauges => :unicorns_seen_per_second,
+    :include_current => true,
+    :autoupdate => 30
+  }
 end
 
-FnordMetric.server_configuration = {
-  :redis_url => "redis://localhost:9191",
-  :redis_prefix => "fnordmetric",
-  :inbound_stream => ["0.0.0.0", "1337"],
-  :web_interface => ["0.0.0.0", "4242"],
-  :start_worker => true,
+FnordMetric.options = {
+  :event_queue_ttl  => 10, 
+  :event_data_ttl   => 10,
+  :session_data_ttl => 1, 
+  :redis_prefix => "fnordmetric" 
 }
 
-FnordMetric.standalone
+
+FnordMetric::Web.new(:port => 4242)
+FnordMetric::Acceptor.new(:protocol => :tcp, :port => 2323)
+FnordMetric::Worker.new
+FnordMetric.run
