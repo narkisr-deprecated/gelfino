@@ -20,10 +20,10 @@
              {:dependencies 
               [[lein-clojars "0.6.0"]  
                [org.codehaus.groovy/groovy "1.7.8"]
+               [com.taoensso/carmine "0.10.3"]
                [storm "0.8.1"]
                [cljs-uuid "0.0.2"]
-               [com.narkisr/java.data "0.0.1-SNAPSHOT"]
-               [org.clojars.tavisrudd/redis-clojure "1.3.1-SNAPSHOT"]]}}
+               [com.narkisr/java.data "0.0.1-SNAPSHOT"]]}}
 
   :plugins [[lein-tarsier "0.9.3"]] 
 
