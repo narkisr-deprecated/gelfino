@@ -16,16 +16,22 @@
 
 (def ^Long port 12201)
 
+(def client-socket (atom nil))
+
+(def ids (atom 0)) 
+
 (defn connect [] 
-  (def ids (atom 0)) 
-  (def client-socket (DatagramSocket.)))
+  (reset! ids 0)
+  (when @client-socket (.close @client-socket))
+  (reset! client-socket (DatagramSocket.))
+  )
 
 (def message-template
   {:version  "1.0" :host  "" :short_message  "" :full_message  "" 
    :timestamp  0 :level  1 :facility  "" :file  "" :line  0 })
 
 (defn raw-send [^"[B" data to]
-  (.send ^DatagramSocket client-socket 
+  (.send ^DatagramSocket @client-socket 
          (DatagramPacket. data (alength data) (InetAddress/getByName to) port)))
 
 (defn gzip [^String message]
@@ -69,8 +75,8 @@
       (raw-send comp-m to)))) 
 
 ;(connect)
-#_(send-> "0.0.0.0" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
-#_(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn"})
+;(send-> "localhost" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
+;(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn"})
 
 
 (defn random-string [length]

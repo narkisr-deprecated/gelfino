@@ -1,4 +1,4 @@
-(defproject com.narkisr/gelfino "0.3.1"
+(defproject com.narkisr/gelfino "0.4.0"
   :description "An embeddable Gelf server library"
   :dependencies [[org.clojure/data.json "0.1.1"]  
                  [org.clojure/tools.logging "0.2.3"]  
