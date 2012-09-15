@@ -43,6 +43,8 @@ user => (use 'gelfino.example.client)
 nil
 user => (unicorn-seen-event)
 nil
+user => (four-errors-event)
+nil
 ```
 
 Each event should be visible on the Webui.
