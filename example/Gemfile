@@ -3,5 +3,4 @@ source "http://rubygems.org"
 
 gem "fnordmetric"
 gem "foreman"
-gem "vagrant"
 gem "eventmachine", ">=1.0.0"
