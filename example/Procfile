@@ -1,5 +1,5 @@
-fnord: ruby metrics.rb run
-gelfino: java -jar gelfino-example-1.0-standalone.jar 0.0.0.0 12201
+fnord: bundle exec ruby metrics.rb 
+gelfino: java -cp target/gelfino-example-1.1-standalone.jar gelfino.example.core 0.0.0.0 12201
 
 
 
