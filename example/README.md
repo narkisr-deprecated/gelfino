@@ -41,7 +41,7 @@ Now point your browser to this [url](http://localhost:4242), start up the client
 $ lein repl
 user => (use 'gelfino.example.client)
 nil
-user => (unicorn-event-seen)
+user => (unicorn-seen-event)
 nil
 ```
 
