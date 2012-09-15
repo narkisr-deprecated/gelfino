@@ -28,7 +28,6 @@
   :plugins [[lein-tarsier "0.9.3"]] 
 
   :aot [gelfino.drools.bridging]
-  :main gelfino.storm
   :resource-paths ["src/main/resources"]
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/" 
                  "jboss" "http://repository.jboss.org/nexus/content/groups/public/"}
