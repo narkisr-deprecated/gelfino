@@ -1,4 +1,5 @@
 (ns gelfino.client
+  "simple GELF log client"
   (:use [cheshire.core :only [generate-string]] )
   (:import 
     (java.net InetSocketAddress DatagramSocket DatagramPacket)
@@ -74,12 +75,12 @@
       (doseq [c (chunks comp-m to)] (raw-send c to))
       (raw-send comp-m to)))) 
 
-;(connect)
-;(send-> "localhost" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))})
-;(send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn" :level 4})
-
-
 (defn random-string [length]
   (let [ascii-codes (concat (range 48 58) (range 66 91) (range 97 123))]
     (apply str (repeatedly length #(char (rand-nth ascii-codes))))))
 
+(comment 
+  "Usage example, first we connect then we send messages to a given host and event map"
+  (connect) 
+  (send-> "192.168.5.16" {:short_message "i am a unicorn" :message (apply str (take 400000 (repeat "I am a unicorn")))}) 
+  (send-> "0.0.0.0" {:short_message "i am a unicorn" :message "i am a unicorn" :level 4}))
