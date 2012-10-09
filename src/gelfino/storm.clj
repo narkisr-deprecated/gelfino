@@ -58,4 +58,3 @@
   ([] (run-local!))
   ([name] (submit-topology! name))  
   )
-;(run-local!)
