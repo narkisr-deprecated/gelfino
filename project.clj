@@ -16,6 +16,7 @@
                  [aot-match/aot-match "0.2.0-alpha10-aot"]
                  [com.sun.xml.bind/jaxb-xjc "2.2-EA"]]
 
+
   :profiles {:dev 
              {:dependencies 
               [[lein-clojars "0.6.0"]  
@@ -23,7 +24,12 @@
                [com.taoensso/carmine "0.10.3"]
                [storm "0.8.1"]
                [cljs-uuid "0.0.2"]
-               [com.narkisr/java.data "0.0.1-SNAPSHOT"]]}}
+               [com.narkisr/java.data "0.0.1-SNAPSHOT"]]
+              :source-paths ["src" "workspace"] 
+     }
+
+
+             }
 
   :plugins [[lein-tarsier "0.9.3"]] 
 

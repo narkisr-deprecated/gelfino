@@ -1,5 +1,5 @@
 (ns gelfino.client
-  "simple GELF log client"
+  "simple GELF over udp client"
   (:use [cheshire.core :only [generate-string]] )
   (:import 
     (java.net InetSocketAddress DatagramSocket DatagramPacket)
@@ -24,8 +24,7 @@
 (defn connect [] 
   (reset! ids 0)
   (when @client-socket (.close @client-socket))
-  (reset! client-socket (DatagramSocket.))
-  )
+  (reset! client-socket (DatagramSocket.)))
 
 (def message-template
   {:version  "1.0" :host  "" :short_message  "" :full_message  "" 
