@@ -8,23 +8,34 @@
     [gelfino streams bootstrap] 
     [backtype.storm clojure config]))
 
-
 (defgspout gelf-events)
 
 (defstream unicorns :short_message #".*unicorn.*" (send events conj message))
 
-(defbolt unicorns-count ["count"] {:prepare true}
+(defbolt level-split ["level"] [tuple collector]
+  (emit-bolt! collector [(str (tuple "level"))] :anchor tuple)
+  (ack! collector tuple)
+  )
+
+(defbolt level-summary ["level" "total"] {:prepare true}
   [conf context collector]
-  (let [counts (atom 0)]
+  (let [counts (atom {})]
     (bolt
       (execute [tuple]
-               (swap! counts inc)
-               (info @counts)
-               (emit-bolt! collector [@counts])))))
+         (let [level (first tuple)]
+          (info @counts)
+           (swap! counts (partial merge-with +) {level 1}) 
+           (emit-bolt! collector [level (@counts level)]) 
+           (ack! collector tuple)
+                 )))))
 
 (defn mk-topology []
   (topology {"1" (spout-spec gelf-events)} 
-            {"2" (bolt-spec {"1" :shuffle} unicorns-count) }))
+            {"2" (bolt-spec {"1" :shuffle} level-split) 
+             "3" (bolt-spec {"2" ["level"] } level-summary)    
+             }))
+
+;(run-local! (mk-topology))
 
 (defn -main 
   ([] (run-local! (mk-topology)))

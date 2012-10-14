@@ -8,4 +8,6 @@
 (defn run-local! [t]
   (let [cluster (LocalCluster.)]
     (.submitTopology cluster "gelfino" {TOPOLOGY-DEBUG true} t)
+    (Thread/sleep 1000000)
+    (.shutdown cluster)
     ))
