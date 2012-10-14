@@ -3,7 +3,7 @@
   (:require [backtype.storm [testing :as t]])
   (:import [storm.trident.testing Split CountAsAggregator StringLength TrueFilter])
   (:use [storm.trident testing])
-  (:use [backtype.storm util]))
+  (:use [backtype.storm clojure util]))
 
 (bootstrap-imports)
 
@@ -16,7 +16,7 @@
     (.parallelismHint 6)
     ))
 
-(defn query [topo drpc word-counts]
+(defn query> [topo drpc word-counts]
   (-> topo
     (.newDRPCStream "words" drpc)
     (.each (fields "args") (Split.) (fields "word"))
@@ -26,8 +26,14 @@
     (.project (fields "sum"))
     ))
 
-(t/with-local-cluster [cluster]
-  (with-drpc [drpc]
-    (let [topo (TridentTopology.) feeder (feeder-spout ["sentence"])] 
-      (run-count topo feeder)
-      (query ))))
+(defn process []
+  (t/with-local-cluster [cluster]
+    (with-drpc [drpc]
+      (let [topo (TridentTopology.) feeder (feeder-spout ["sentence"]) 
+            words (run-count topo feeder)] 
+        (query> topo drpc words)
+        (with-topology [cluster topo] 
+          (feed feeder [["hello the man said"] ["the"]])
+          (println (exec-drpc drpc "words" "the")))))) )
+
+(defn main- [] (process))
