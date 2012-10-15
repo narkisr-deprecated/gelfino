@@ -23,17 +23,15 @@
     (bolt
       (execute [tuple]
          (let [level (first tuple)]
-          (info @counts)
            (swap! counts (partial merge-with +) {level 1}) 
+           (info @counts)
            (emit-bolt! collector [level (@counts level)]) 
-           (ack! collector tuple)
-                 )))))
+           (ack! collector tuple))))))
 
 (defn mk-topology []
-  (topology {"1" (spout-spec gelf-events)} 
-            {"2" (bolt-spec {"1" :shuffle} level-split) 
-             "3" (bolt-spec {"2" ["level"] } level-summary)    
-             }))
+  (topology {"1" (spout-spec gelf-events :p 1)} 
+            {"2" (bolt-spec {"1" :shuffle} level-split :p 2) 
+             "3" (bolt-spec {"2" ["level"] } level-summary :p 2)}))
 
 ;(run-local! (mk-topology))
 
